@@ -58,7 +58,13 @@ that way — do not import React or stores into `src/game/`.
 
 ## Conventions
 
-- **No emoji, ever. No raster images.** All visuals are SVG via `AssetRegistry`.
+- **No vertical scroll on gameplay screens.** Menu, Prep, Combat, Reward, GameOver must
+  fit within `100dvh` — no page scroll. The only things allowed to scroll are modals/drawers
+  and bounded catalog lists (Perks, Bestiary) whose header stays fixed while an inner
+  `.scroll-area` scrolls. It is a mobile game: it must fit the screen. When adding content
+  to a gameplay screen, make it fit (grids, drawers, compaction) — do not let the page grow.
+- **No emoji, ever. No raster images baked in.** All visuals are SVG via `AssetRegistry`
+  or optional swappable raster in `public/art/`.
 - Engine stays pure + covered by tests in `src/game/*.test.ts`. Add a test when you
   add/alter a combat rule.
 - New content = data only. A new skill is an entry in `skills.ts`; a new monster

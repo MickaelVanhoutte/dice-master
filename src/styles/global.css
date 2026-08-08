@@ -142,7 +142,18 @@ button {
   flex-direction: column;
   padding: var(--sp-4, 16px);
   gap: 12px;
+  overflow: hidden; /* gameplay screens must fit; no page scroll */
+}
+
+/* bounded inner scroll for catalog lists (perks, bestiary) */
+.scroll-area {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  -webkit-overflow-scrolling: touch;
 }
 
 .dim {

@@ -6,138 +6,193 @@ import { SKILLS_BY_ID } from '../../data/skills'
 import { aggregatePerks } from '../../data/perks'
 import { upgradeCost } from '../../game/skillMath'
 import { CharacterArt, GoldIcon, HeartIcon, SkillIcon } from '../../assets/AssetRegistry'
-import { SkillBar, roleColor } from '../components/SkillBar'
+import { OrnatePortrait } from '../components/Frame'
+import { SkillCard } from '../components/SkillCard'
+import { roleColor } from '../components/SkillBar'
 import { describeSkill } from '../describe'
 
 export function PrepScreen() {
   const run = useRun((s) => s.run)
-  const combat = useRun((s) => s.combat)
   const setCharacter = useRun((s) => s.setCharacter)
   const setSlot = useRun((s) => s.setSlot)
   const upgradeSkill = useRun((s) => s.upgradeSkill)
   const startFight = useRun((s) => s.startFight)
   const goTo = useRun((s) => s.goTo)
+  const combat = useRun((s) => s.combat)
   const perks = aggregatePerks(useMeta((s) => s.perks))
+
   const [sel, setSel] = useState(1)
-  const [pickHero, setPickHero] = useState(false)
+  const [focus, setFocus] = useState<string | null>(null)
+  const [heroModal, setHeroModal] = useState(false)
 
   if (!run) return null
-
   const canSwapHero = run.bossIndex === 1 && !combat
+
   const loadout = [
     null,
     ...[1, 2, 3, 4, 5, 6].map((i) => (run.slots[i] ? SKILLS_BY_ID[run.slots[i]!] : null)),
   ]
-  const discount = perks.upgradeDiscountPct
-  const assignedElsewhere = (id: string) => run.slots.indexOf(id)
+  const slotOf = (id: string) => run.slots.indexOf(id)
+  const focusOwned = focus ? run.owned.find((o) => o.id === focus) : undefined
+  const focusSkill = focus ? SKILLS_BY_ID[focus] : undefined
+  const focusCost = focusSkill
+    ? Math.round(upgradeCost(focusSkill, focusOwned?.level ?? 0) * (1 - perks.upgradeDiscountPct))
+    : 0
+
+  const equip = (id: string) => {
+    setSlot(sel, id)
+    setFocus(id)
+    setSel((s) => (s % 6) + 1) // advance to next slot for quick filling
+  }
 
   return (
     <div className="screen prep">
       <div className="row spread prep-head">
         <div>
           <h2>Prepare · Boss {run.bossIndex}</h2>
-          <div className="row small dim gap">
-            <span className="row">
-              <HeartIcon className="mini-ic" /> {run.hp}/{run.maxHp}
-            </span>
-            <span className="row">
-              <GoldIcon className="mini-ic" /> {run.gold}
-            </span>
-          </div>
         </div>
-        <button className="btn secondary" onClick={() => goTo('menu')}>
-          Menu
-        </button>
+        <div className="row gap">
+          <span className="pip">
+            <HeartIcon className="pip-ic hp-ic" /> {run.hp}
+          </span>
+          <span className="pip">
+            <GoldIcon className="pip-ic" /> {run.gold}
+          </span>
+          <button className="btn secondary small-btn" onClick={() => goTo('menu')}>
+            Menu
+          </button>
+        </div>
       </div>
 
-      {/* Hero block — tap to change (only before first fight) */}
+      {/* Hero */}
       <button
-        className={`panel char-strip ${canSwapHero ? 'tappable' : ''}`}
-        onClick={() => canSwapHero && setPickHero((v) => !v)}
+        className={`hero-bar ${canSwapHero ? 'tappable' : ''}`}
+        onClick={() => canSwapHero && setHeroModal(true)}
         disabled={!canSwapHero}
       >
-        <CharacterArt id={run.character.id} className="char-strip-art" />
-        <div className="char-strip-body">
+        <OrnatePortrait className="hero-bar-portrait" glow="var(--teal-lit)">
+          <CharacterArt id={run.character.id} className="art-svg" />
+        </OrnatePortrait>
+        <div className="hero-bar-body">
           <div className="row spread">
-            <strong>{run.character.name}</strong>
-            {canSwapHero && <span className="swap-hint">{pickHero ? 'close' : 'tap to change'}</span>}
+            <strong className="hero-name">{run.character.name}</strong>
+            {canSwapHero && <span className="swap-hint">tap to change</span>}
           </div>
-          <p className="dim small">{run.character.desc}</p>
+          <p className="dim small hero-desc">{run.character.desc}</p>
         </div>
       </button>
 
-      {pickHero && canSwapHero && (
-        <div className="hero-choices">
-          {CHARACTERS.map((c) => (
-            <button
-              key={c.id}
-              className={`panel char-card ${c.id === run.character.id ? 'assigned' : ''}`}
-              onClick={() => {
-                setCharacter(c)
-                setPickHero(false)
-              }}
-            >
-              <CharacterArt id={c.id} className="char-card-art" />
-              <div className="char-card-body">
-                <h3>{c.name}</h3>
-                <p className="dim small">{c.desc}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-
-      <div className="prep-slots">
-        <div className="label">Slots — tap to select, then pick a skill</div>
-        <SkillBar loadout={loadout} firing={new Set([sel])} onTap={setSel} />
-        <button
-          className="btn secondary small-btn"
-          onClick={() => setSlot(sel, null)}
-          disabled={!run.slots[sel]}
-        >
-          Clear slot {sel}
-        </button>
+      {/* Loadout slots */}
+      <div className="slots-row">
+        {[1, 2, 3, 4, 5, 6].map((slot) => (
+          <SkillCard
+            key={slot}
+            skill={loadout[slot]}
+            slot={slot}
+            selected={slot === sel}
+            compact
+            onClick={() => {
+              setSel(slot)
+              if (run.slots[slot]) setFocus(run.slots[slot])
+            }}
+          />
+        ))}
       </div>
 
-      <div className="label">Your Skills — tap to equip in slot {sel}, or upgrade with gold</div>
-      <div className="owned-list">
-        {run.owned.map((o) => {
-          const base = SKILLS_BY_ID[o.id]
-          if (!base) return null
-          const cost = Math.round(upgradeCost(base, o.level) * (1 - discount))
-          const at = assignedElsewhere(o.id)
-          return (
-            <div key={o.id} className={`panel owned-card ${at > 0 ? 'assigned' : ''}`}>
+      {/* Item pool */}
+      <div className="pool-panel">
+        <div className="label pool-label">Your Skills — tap to equip in slot {sel}</div>
+        <div className="pool-grid">
+          {run.owned.map((o) => {
+            const base = SKILLS_BY_ID[o.id]
+            if (!base) return null
+            const at = slotOf(o.id)
+            return (
               <button
-                className="owned-main"
-                onClick={() => setSlot(sel, o.id)}
+                key={o.id}
+                className={`pool-tile ${focus === o.id ? 'focused' : ''} ${at > 0 ? 'equipped' : ''}`}
                 style={{ color: roleColor(base.art) }}
+                onClick={() => equip(o.id)}
               >
-                <SkillIcon art={base.art} className="owned-ic" />
-                <div className="owned-text">
-                  <div className="row spread">
-                    <strong className="owned-name">{base.name}</strong>
-                    <span className="lvl-tag">Lv {o.level + 1}</span>
-                  </div>
-                  <div className="dim small">{describeSkill(base, o.level)}</div>
-                  {at > 0 && <div className="slot-hint">In slot {at}</div>}
-                </div>
+                {at > 0 && <span className="pool-slot">{at}</span>}
+                <span className="pool-lv">Lv{o.level + 1}</span>
+                <SkillIcon art={base.art} className="pool-ic" />
+                <span className="pool-name">{base.name}</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Description + actions */}
+      <div className="desc-plaque">
+        {focusSkill ? (
+          <>
+            <div className="row spread">
+              <strong className="desc-name">{focusSkill.name}</strong>
+              <span className="lvl-tag">Lv {(focusOwned?.level ?? 0) + 1}</span>
+            </div>
+            <div className="desc-text">{describeSkill(focusSkill, focusOwned?.level ?? 0)}</div>
+            <div className="desc-actions">
+              <button
+                className="btn secondary desc-btn"
+                onClick={() => {
+                  const s = slotOf(focusSkill.id)
+                  if (s > 0) setSlot(s, null)
+                }}
+                disabled={slotOf(focusSkill.id) < 1}
+              >
+                Unequip
               </button>
               <button
-                className="btn secondary upg-btn"
-                disabled={run.gold < cost}
-                onClick={() => upgradeSkill(o.id)}
+                className="btn gold desc-btn"
+                disabled={run.gold < focusCost}
+                onClick={() => upgradeSkill(focusSkill.id)}
               >
-                <GoldIcon className="mini-ic" /> {cost}
+                <GoldIcon className="mini-ic" /> Upgrade {focusCost}
               </button>
             </div>
-          )
-        })}
+          </>
+        ) : (
+          <div className="dim small center">Tap a skill to see details, or a slot then a skill to equip.</div>
+        )}
       </div>
 
-      <button className="btn big wide enter-btn" onClick={startFight}>
+      <button className="btn gold big wide" onClick={startFight}>
         Enter Battle — Boss {run.bossIndex}
       </button>
+
+      {/* Hero picker modal */}
+      {heroModal && (
+        <div className="modal-scrim" onClick={() => setHeroModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="row spread modal-head">
+              <h3>Choose Hero</h3>
+              <button className="btn secondary small-btn" onClick={() => setHeroModal(false)}>
+                Close
+              </button>
+            </div>
+            <div className="scroll-area modal-list">
+              {CHARACTERS.map((c) => (
+                <button
+                  key={c.id}
+                  className={`panel char-card ${c.id === run.character.id ? 'assigned' : ''}`}
+                  onClick={() => {
+                    setCharacter(c)
+                    setHeroModal(false)
+                  }}
+                >
+                  <CharacterArt id={c.id} className="char-card-art" />
+                  <div className="char-card-body">
+                    <h3>{c.name}</h3>
+                    <p className="dim small">{c.desc}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

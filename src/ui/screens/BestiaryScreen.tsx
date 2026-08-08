@@ -41,7 +41,7 @@ export function BestiaryScreen() {
       </div>
 
       {tab === 'skills' && (
-        <div className="bestiary-list">
+        <div className="bestiary-list scroll-area">
           {SKILLS.map((s) => {
             const seen = seenSkills.has(s.id)
             return (
@@ -63,7 +63,7 @@ export function BestiaryScreen() {
       )}
 
       {tab === 'monsters' && (
-        <div className="bestiary-list">
+        <div className="bestiary-list scroll-area">
           {MONSTERS.map((m) => {
             const seen = seenMonsters.has(m.id)
             return (
@@ -82,7 +82,7 @@ export function BestiaryScreen() {
       )}
 
       {tab === 'heroes' && (
-        <div className="bestiary-list">
+        <div className="bestiary-list scroll-area">
           {CHARACTERS.map((c) => {
             const seen = seenChars.has(c.id)
             return (

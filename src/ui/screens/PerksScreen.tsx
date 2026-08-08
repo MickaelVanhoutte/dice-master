@@ -32,7 +32,7 @@ export function PerksScreen() {
         <strong className="points-num">{meta.perkPoints}</strong>
       </div>
 
-      <div className="perk-list">
+      <div className="perk-list scroll-area">
         {PERKS.map((p) => {
           const level = meta.perks[p.id] ?? 0
           const maxed = level >= p.maxLevel
