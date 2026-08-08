@@ -19,7 +19,6 @@ export const SKILLS: Skill[] = [
     desc: 'Deal 10 magical damage.',
     rarity: 'common',
     art: 'skill-magic',
-    starter: true,
     costBase: 10,
     effects: [{ kind: 'damage', type: 'magical', amount: 10 }],
   },
@@ -39,7 +38,6 @@ export const SKILLS: Skill[] = [
     desc: 'Deal 12 physical damage.',
     rarity: 'common',
     art: 'skill-phys',
-    starter: true,
     costBase: 10,
     effects: [{ kind: 'damage', type: 'physical', amount: 12 }],
   },
@@ -59,7 +57,6 @@ export const SKILLS: Skill[] = [
     desc: 'Gain 10 shield.',
     rarity: 'common',
     art: 'skill-shield',
-    starter: true,
     costBase: 10,
     effects: [{ kind: 'shield', amount: 10 }],
   },
@@ -393,15 +390,16 @@ export const SKILLS_BY_ID = Object.fromEntries(SKILLS.map((s) => [s.id, s]))
 
 export const STARTER_SKILL_IDS = SKILLS.filter((s) => s.starter).map((s) => s.id)
 
-// Default starter loadout: slots 1..6.
+// Default starter loadout: slots 1..6. The kit is 3 skills, each equipped twice
+// (2 physical, 2 magical, 2 shield) — upgrading a skill lifts both its slots.
 export const DEFAULT_SLOTS: (string | null)[] = [
   null, // slot 0 unused
   'slash',
-  'bash',
+  'slash',
   'spark',
-  'frost',
+  'spark',
   'guard',
-  'brace',
+  'guard',
 ]
 
 // Pool eligible to drop as rewards (non-starters).

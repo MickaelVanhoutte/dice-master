@@ -155,12 +155,9 @@ export const useRun = create<RunStore>()(
       setSlot: (slot, skillId) => {
         const run = get().run
         if (!run) return
+        // A skill may occupy multiple slots (stacking); no dedup. Upgrading the
+        // skill lifts every slot that references it (buildLoadout scales by level).
         const slots = [...run.slots]
-        // If skill already in another slot, swap it out of there.
-        if (skillId) {
-          const existing = slots.indexOf(skillId)
-          if (existing > 0 && existing !== slot) slots[existing] = null
-        }
         slots[slot] = skillId
         set({ run: { ...run, slots } })
       },

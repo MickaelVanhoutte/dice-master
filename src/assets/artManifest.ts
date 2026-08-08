@@ -3,9 +3,9 @@
 // PNG/JPGs here later (see /art/PROMPTS.md) with zero code change.
 
 export function monsterArtUrl(id: string): string {
-  return `/art/mon-${id}.png`
+  return `/art/mon-${id}.jpg`
 }
 
 export function heroArtUrl(id: string): string {
-  return `/art/hero-${id}.png`
+  return `/art/hero-${id}.jpg`
 }
