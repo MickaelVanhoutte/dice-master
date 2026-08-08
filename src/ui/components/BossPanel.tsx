@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion'
 import type { CombatState } from '../../game/types'
-import { MonsterArt } from '../../assets/AssetRegistry'
+import { MonsterArt, HeartIcon, ShieldIcon, SkillIcon } from '../../assets/AssetRegistry'
 import { StatBar } from './Bars'
 import { Floaters } from './Floaters'
+import { OrnatePortrait, WoodPanel } from './Frame'
 import { sumMod } from '../../game/effects'
 
 export function BossPanel({ combat }: { combat: CombatState }) {
@@ -12,49 +13,56 @@ export function BossPanel({ combat }: { combat: CombatState }) {
   const weaken = sumMod(m, 'weaken')
   const poison = sumMod(m, 'poison')
   const curse = sumMod(m, 'curse')
-  const hit = combat.events.some((e) => e.target === 'monster' && (e.tone === 'damage' || e.tone === 'magic'))
+  const hit = combat.events.some(
+    (e) => e.target === 'monster' && (e.tone === 'damage' || e.tone === 'magic'),
+  )
 
   return (
-    <div className="boss panel">
-      <div className="boss-top">
-        <motion.div
-          className="boss-art"
-          animate={hit ? { x: [0, -6, 6, -3, 0] } : {}}
-          transition={{ duration: 0.3 }}
-        >
-          <MonsterArt id={m.id} className="art-svg" />
-          <Floaters events={combat.events} target="monster" />
+    <div className="boss">
+      <div className="boss-portrait-wrap">
+        <span className="stage-banner">Stage {m.bossIndex}</span>
+        <motion.div animate={hit ? { x: [0, -6, 6, -3, 0] } : {}} transition={{ duration: 0.3 }}>
+          <OrnatePortrait className="boss-portrait" glow="var(--debuff)" shape="rect">
+            <MonsterArt id={m.id} className="art-svg" />
+          </OrnatePortrait>
         </motion.div>
-        <div className="boss-info">
-          <div className="row spread">
-            <h3 className="boss-name">{m.name}</h3>
-            <span className="boss-lvl">Boss {m.bossIndex}</span>
-          </div>
-          <div className="statrow">
-            <StatBar value={m.hp} max={m.maxHp} color="var(--danger)" height={14} />
-            <span className="stat-num">
-              {m.hp}/{m.maxHp}
-            </span>
-          </div>
-          {m.shield > 0 && (
-            <div className="row shieldline">
-              <span className="chip shield">Shield {m.shield}</span>
-            </div>
-          )}
-          <div className="chips">
-            {phys > 0 && <span className="chip phys">{phys} PHYS</span>}
-            {mag > 0 && <span className="chip magic">{mag} MAG</span>}
-            {weaken > 0 && <span className="chip debuff">-{weaken} weaken</span>}
-            {poison > 0 && <span className="chip debuff">{poison} poison</span>}
-            {curse > 0 && <span className="chip debuff">+{curse}% dmg</span>}
-          </div>
-        </div>
+        <Floaters events={combat.events} target="monster" />
+        <div className="boss-nameplate">{m.name}</div>
       </div>
-      {m.passive.kind !== 'none' && (
-        <div className="passive">
-          <span className="passive-tag">Passive</span> {m.passive.label}
+
+      <WoodPanel className="next-plaque">
+        <div className="next-title">Next</div>
+        <div className="next-attacks">
+          {phys > 0 && (
+            <span className="next-atk phys">
+              <SkillIcon art="skill-phys" className="next-ic" /> {Math.max(0, phys - weaken)}
+            </span>
+          )}
+          {mag > 0 && (
+            <span className="next-atk magic">
+              <SkillIcon art="skill-magic" className="next-ic" /> {mag}
+            </span>
+          )}
+          {phys === 0 && mag === 0 && <span className="dim small">—</span>}
         </div>
-      )}
+        <div className="next-stats">
+          <div className="next-stat">
+            <HeartIcon className="next-ic hp" />
+            <StatBar value={m.hp} max={m.maxHp} color="var(--danger)" height={10} />
+            <span className="next-num">{m.hp}</span>
+          </div>
+          <div className="next-stat">
+            <ShieldIcon className="next-ic shd" />
+            <span className="next-num">{m.shield}</span>
+          </div>
+        </div>
+        <div className="next-tags">
+          {weaken > 0 && <span className="tag debuff">weaken {weaken}</span>}
+          {poison > 0 && <span className="tag debuff">poison {poison}</span>}
+          {curse > 0 && <span className="tag debuff">+{curse}%</span>}
+        </div>
+        {m.passive.kind !== 'none' && <div className="next-passive">{m.passive.label}</div>}
+      </WoodPanel>
     </div>
   )
 }

@@ -11,6 +11,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,woff2,png,jpg}'],
+      },
       manifest: {
         name: 'Dice Masters',
         short_name: 'DiceMasters',

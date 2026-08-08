@@ -1,0 +1,15 @@
+/* Self-hosted variable fonts (offline/PWA-safe). Latin subset only. */
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/cinzel-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../assets/fonts/ebgaramond-latin.woff2') format('woff2');
+}

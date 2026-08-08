@@ -4,7 +4,7 @@ import { firingSlots } from '../../game/combat'
 import { BossPanel } from '../components/BossPanel'
 import { PlayerPanel } from '../components/PlayerPanel'
 import { DiceBoard } from '../components/DiceBoard'
-import { GoldIcon } from '../../assets/AssetRegistry'
+import { SkillCard } from '../components/SkillCard'
 
 export function CombatScreen() {
   const combat = useRun((s) => s.combat)
@@ -13,7 +13,6 @@ export function CombatScreen() {
   const confirm = useRun((s) => s.confirm)
   const monsterStep = useRun((s) => s.monsterStep)
 
-  // Auto-run the monster's turn (with a beat for animation).
   useEffect(() => {
     if (combat?.phase === 'monster') {
       const t = setTimeout(monsterStep, 850)
@@ -31,7 +30,7 @@ export function CombatScreen() {
     label = 'OK'
     action = confirm
   } else if (phase === 'monster') {
-    label = 'Enemy turn…'
+    label = '…'
     action = null
   } else if (phase === 'won' || phase === 'lost') {
     label = '…'
@@ -42,26 +41,38 @@ export function CombatScreen() {
     <div className="combat">
       <BossPanel combat={combat} />
 
-      <div className="board-mid">
-        <div className="turn-tag">Turn {combat.turn}</div>
-        {combat.goldGained > 0 && (
-          <div className="gold-tag row">
-            <GoldIcon className="mini-ic" /> +{combat.goldGained}
-          </div>
-        )}
-        <DiceBoard
-          dice={combat.dice}
-          rerolls={combat.player.rerolls}
-          canReroll={phase === 'rolled' && combat.player.rerolls > 0}
-          onReroll={reroll}
-        />
-      </div>
+      <DiceBoard
+        dice={combat.dice}
+        rerolls={combat.player.rerolls}
+        canReroll={phase === 'rolled' && combat.player.rerolls > 0}
+        onReroll={reroll}
+        turn={combat.turn}
+        goldGained={combat.goldGained}
+      />
 
       <div className="combat-bottom">
-        <PlayerPanel combat={combat} loadout={combat.setup.loadout} firing={firing} />
-        <button className="btn big wide roll-btn" disabled={!action} onClick={() => action?.()}>
-          {label}
-        </button>
+        <div className="skillcards">
+          {[1, 2, 3, 4, 5, 6].map((slot) => (
+            <SkillCard
+              key={slot}
+              skill={combat.setup.loadout[slot]}
+              slot={slot}
+              firing={firing.has(slot)}
+              compact
+            />
+          ))}
+        </div>
+
+        <div className="action-bar">
+          <PlayerPanel combat={combat} />
+          <button
+            className={`roll-btn ${phase === 'rolled' ? 'ready' : ''}`}
+            disabled={!action}
+            onClick={() => action?.()}
+          >
+            <span className="roll-label">{label}</span>
+          </button>
+        </div>
       </div>
     </div>
   )

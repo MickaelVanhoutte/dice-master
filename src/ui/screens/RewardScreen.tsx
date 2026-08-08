@@ -1,7 +1,7 @@
 import { useRun } from '../../state/runStore'
 import { SKILLS_BY_ID } from '../../data/skills'
-import { GoldIcon, SkillIcon } from '../../assets/AssetRegistry'
-import { roleColor } from '../components/SkillBar'
+import { GoldIcon } from '../../assets/AssetRegistry'
+import { SkillCard } from '../components/SkillCard'
 import { describeSkill } from '../describe'
 
 export function RewardScreen() {
@@ -37,15 +37,12 @@ export function RewardScreen() {
       {skill ? (
         <>
           <div className="label center">New skill found!</div>
-          <div className="panel skill-offer" style={{ color: roleColor(skill.art) }}>
-            <SkillIcon art={skill.art} className="offer-ic" />
-            <div className="offer-text">
-              <div className="row spread">
-                <strong>{skill.name}</strong>
-                <span className={`rarity ${skill.rarity}`}>{skill.rarity}</span>
-              </div>
-              <div className="dim small">{describeSkill(skill, 0)}</div>
-            </div>
+          <div className="skill-offer">
+            <SkillCard skill={skill} level={0} />
+          </div>
+          <div className="offer-meta center">
+            <span className={`rarity ${skill.rarity}`}>{skill.rarity}</span>
+            <div className="dim small">{describeSkill(skill, 0)}</div>
           </div>
           <div className="reward-actions">
             <button className="btn big wide" onClick={() => claim(true)}>

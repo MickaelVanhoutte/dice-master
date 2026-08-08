@@ -1,35 +1,69 @@
 :root {
-  /* palette */
-  --bg: #0e0b1a;
-  --bg-2: #171130;
-  --panel: #1e1740;
-  --panel-2: #271e52;
-  --line: #3a2f6b;
-  --text: #ece7ff;
-  --text-dim: #a89dd6;
+  /* ── wood / desk ─────────────────────────────────────────── */
+  --wood-0: #1a1009;
+  --wood-1: #2a1b0f;
+  --wood-2: #3a2817;
+  --wood-3: #4c3521;
 
-  --accent: #8b7bd8;
-  --accent-2: #b9a6ff;
+  /* ── parchment ───────────────────────────────────────────── */
+  --parch-1: #f2e6c6;
+  --parch-2: #e6d3a6;
+  --parch-3: #d8bf88;
+  --parch-line: #b79a5f;
+  --ink: #3a2c17;
+  --ink-dim: #6b5738;
 
-  --phys: #ff8a5c;
-  --magic: #7bc6ff;
-  --shield: #9fd8ff;
-  --heal: #7be3a3;
-  --gold: #ffd45c;
-  --debuff: #d47bff;
-  --buff: #ffe08a;
-  --danger: #ff5c72;
+  /* ── brass / gold ────────────────────────────────────────── */
+  --brass-dark: #6e5220;
+  --brass: #b98f3e;
+  --brass-lit: #e7c268;
+  --gold: #ffcf5c;
+  --gold-soft: #f0d488;
 
-  /* spacing */
+  /* ── teal / emerald accent ───────────────────────────────── */
+  --teal-dark: #0e3b34;
+  --teal: #1f6f5c;
+  --teal-lit: #3fae8f;
+  --teal-head: #14544a;
+
+  /* ── text ────────────────────────────────────────────────── */
+  --text: #f6ecd6;
+  --text-dim: #c7b48c;
+  --text-parch: var(--ink);
+
+  /* ── effect colors (warmed) ──────────────────────────────── */
+  --phys: #e0692f;
+  --magic: #6db6ff;
+  --shield: #8fbfe0;
+  --heal: #5cc98a;
+  --gold-fx: #ffcf5c;
+  --debuff: #b06ad6;
+  --buff: #ffdf8a;
+  --danger: #d24136;
+
+  /* ── spacing ─────────────────────────────────────────────── */
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 12px;
   --sp-4: 16px;
   --sp-5: 24px;
+
+  /* ── structure ───────────────────────────────────────────── */
+  --line: #5a4326;
   --radius: 14px;
   --radius-sm: 9px;
-
   --tap: 44px;
+
+  /* ── fonts ───────────────────────────────────────────────── */
+  --font-display: 'Cinzel', 'Times New Roman', serif;
+  --font-body: 'EB Garamond', Georgia, 'Times New Roman', serif;
+
+  /* ── shadows / bevels ────────────────────────────────────── */
+  --bevel-out: inset 0 1px 0 rgba(255, 240, 200, 0.35), inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+  --drop: 0 6px 16px rgba(0, 0, 0, 0.55);
+
+  /* brass border gradient (reused) */
+  --brass-grad: linear-gradient(160deg, var(--brass-lit), var(--brass) 45%, var(--brass-dark));
 
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);

@@ -1,5 +1,7 @@
-// Swappable placeholder art. Everything is inline SVG (no emoji, no raster).
-// Real art can later replace these components without touching game code.
+// Swappable art. Inline SVG by default (no emoji, no bundled raster); optional painted
+// raster drops into /public/art/ and replaces the SVG with zero code change.
+import { useState } from 'react'
+import { heroArtUrl, monsterArtUrl } from './artManifest'
 
 function hash(str: string): number {
   let h = 2166136261
@@ -13,14 +15,39 @@ function hash(str: string): number {
 function palette(seed: number): { body: string; dark: string; glow: string } {
   const hue = seed % 360
   return {
-    body: `hsl(${hue} 55% 52%)`,
-    dark: `hsl(${hue} 55% 34%)`,
-    glow: `hsl(${(hue + 40) % 360} 80% 68%)`,
+    body: `hsl(${hue} 45% 48%)`,
+    dark: `hsl(${hue} 48% 30%)`,
+    glow: `hsl(${(hue + 40) % 360} 75% 66%)`,
   }
 }
 
-// ── Monster: procedural creature seeded by id ─────────────────────────────
-export function MonsterArt({ id, className }: { id: string; className?: string }) {
+// ── raster-or-svg ──────────────────────────────────────────────────────────
+function RasterOrSvg({
+  src,
+  alt,
+  className,
+  children,
+}: {
+  src: string
+  alt: string
+  className?: string
+  children: React.ReactNode
+}) {
+  const [failed, setFailed] = useState(false)
+  if (failed) return <>{children}</>
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      draggable={false}
+      onError={() => setFailed(true)}
+    />
+  )
+}
+
+// ── monster (procedural creature; raster if present) ───────────────────────
+function MonsterSvg({ id, className }: { id: string; className?: string }) {
   const s = hash(id)
   const p = palette(s)
   const variant = s % 4
@@ -28,7 +55,6 @@ export function MonsterArt({ id, className }: { id: string; className?: string }
   const eyes = variant % 2 === 0 ? [38, 62] : [34, 50, 66]
   return (
     <svg viewBox="0 0 100 100" className={className} role="img" aria-label={id}>
-      {/* spikes / horns */}
       {variant === 1 && (
         <g fill={p.dark}>
           <polygon points="30,26 36,6 42,26" />
@@ -42,23 +68,19 @@ export function MonsterArt({ id, className }: { id: string; className?: string }
           ))}
         </g>
       )}
-      {/* body */}
       <path
         d="M50 22 C74 22 84 40 84 58 C84 80 68 90 50 90 C32 90 16 80 16 58 C16 40 26 22 50 22 Z"
         fill={p.body}
         stroke={p.dark}
         strokeWidth="3"
       />
-      {/* belly */}
       <ellipse cx="50" cy="66" rx="20" ry="16" fill={p.dark} opacity="0.35" />
-      {/* eyes */}
       {eyes.map((x) => (
         <g key={x}>
           <circle cx={x} cy={eyeY} r="7" fill="#fff" />
           <circle cx={x} cy={eyeY + 1} r="3.2" fill="#161022" />
         </g>
       ))}
-      {/* mouth */}
       {variant === 2 ? (
         <path d="M36 74 Q50 84 64 74" stroke="#161022" strokeWidth="3" fill="none" />
       ) : (
@@ -71,32 +93,93 @@ export function MonsterArt({ id, className }: { id: string; className?: string }
   )
 }
 
-// ── Character: procedural humanoid seeded by id ───────────────────────────
-export function CharacterArt({ id, className }: { id: string; className?: string }) {
+export function MonsterArt({ id, className }: { id: string; className?: string }) {
+  return (
+    <RasterOrSvg src={monsterArtUrl(id)} alt={id} className={className}>
+      <MonsterSvg id={id} className={className} />
+    </RasterOrSvg>
+  )
+}
+
+// ── character (procedural humanoid; raster if present) ─────────────────────
+function HeroSvg({ id, className }: { id: string; className?: string }) {
   const s = hash(id + 'c')
   const p = palette(s)
   return (
     <svg viewBox="0 0 100 100" className={className} role="img" aria-label={id}>
-      {/* hood / cloak */}
       <path
         d="M50 16 C70 16 78 34 78 54 L78 88 L22 88 L22 54 C22 34 30 16 50 16 Z"
         fill={p.body}
         stroke={p.dark}
         strokeWidth="3"
       />
-      {/* face */}
       <ellipse cx="50" cy="46" rx="16" ry="18" fill="#f2e6d8" />
-      {/* eyes */}
       <circle cx="44" cy="45" r="2.6" fill="#161022" />
       <circle cx="56" cy="45" r="2.6" fill="#161022" />
-      {/* emblem */}
       <circle cx="50" cy="72" r="8" fill={p.glow} opacity="0.9" />
       <circle cx="50" cy="72" r="3.5" fill={p.dark} />
     </svg>
   )
 }
 
-// ── Skill icons by role ───────────────────────────────────────────────────
+export function CharacterArt({ id, className }: { id: string; className?: string }) {
+  return (
+    <RasterOrSvg src={heroArtUrl(id)} alt={id} className={className}>
+      <HeroSvg id={id} className={className} />
+    </RasterOrSvg>
+  )
+}
+
+// ── ornaments ──────────────────────────────────────────────────────────────
+// A filigree corner piece (top-left orientation); rotate via CSS for others.
+export function CornerOrnament({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 40" className={className} aria-hidden>
+      <g fill="none" stroke="url(#brassStroke)" strokeWidth="2.4" strokeLinecap="round">
+        <path d="M4 22 C4 10 10 4 22 4" />
+        <path d="M4 30 C4 14 14 4 30 4" opacity="0.6" />
+        <path d="M10 20 C10 14 14 10 20 10" />
+      </g>
+      <circle cx="20" cy="20" r="2.6" fill="var(--brass-lit)" />
+      <defs>
+        <linearGradient id="brassStroke" x1="0" y1="0" x2="40" y2="40">
+          <stop offset="0" stopColor="var(--brass-lit)" />
+          <stop offset="1" stopColor="var(--brass-dark)" />
+        </linearGradient>
+      </defs>
+    </svg>
+  )
+}
+
+// Compass-rose watermark for the parchment board.
+export function CompassRose({ className }: { className?: string }) {
+  const pts = (r: number, a: number) => {
+    const rad = (a * Math.PI) / 180
+    return `${50 + r * Math.cos(rad)},${50 + r * Math.sin(rad)}`
+  }
+  return (
+    <svg viewBox="0 0 100 100" className={className} aria-hidden>
+      <g stroke="currentColor" fill="none" strokeWidth="0.8" opacity="0.9">
+        <circle cx="50" cy="50" r="42" />
+        <circle cx="50" cy="50" r="34" strokeDasharray="1 3" />
+        {[0, 45, 90, 135].map((a) => (
+          <line key={a} x1={pts(42, a).split(',')[0]} y1={pts(42, a).split(',')[1]} x2={pts(42, a + 180).split(',')[0]} y2={pts(42, a + 180).split(',')[1]} />
+        ))}
+      </g>
+      <g fill="currentColor" opacity="0.85">
+        {[0, 90, 180, 270].map((a) => (
+          <polygon key={a} points={`${pts(40, a)} ${pts(7, a + 90)} ${pts(7, a - 90)}`} />
+        ))}
+        {[45, 135, 225, 315].map((a) => (
+          <polygon key={a} points={`${pts(24, a)} ${pts(5, a + 90)} ${pts(5, a - 90)}`} opacity="0.5" />
+        ))}
+      </g>
+      <circle cx="50" cy="50" r="4" fill="currentColor" />
+    </svg>
+  )
+}
+
+// ── skill icons by role ───────────────────────────────────────────────────
 type IconProps = { className?: string }
 
 function Magic({ className }: IconProps) {
@@ -175,7 +258,6 @@ export function SkillIcon({ art, className }: { art: string; className?: string 
   return <Comp className={className} />
 }
 
-// ── Simple stat / misc glyphs ─────────────────────────────────────────────
 export function HeartIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden>
@@ -193,7 +275,7 @@ export function GoldIcon({ className }: IconProps) {
   return <Gold className={className} />
 }
 
-// Dice pip face (1..6).
+// Dice pip face (1..6). Pips use currentColor; the cube styling lives in CSS.
 export function DieFace({ value, className }: { value: number; className?: string }) {
   const spots: Record<number, [number, number][]> = {
     1: [[50, 50]],

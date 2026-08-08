@@ -1,45 +1,46 @@
 import { motion } from 'framer-motion'
-import type { CombatState, Skill } from '../../game/types'
-import { CharacterArt } from '../../assets/AssetRegistry'
-import { HpRow, ShieldRow } from './Bars'
+import type { CombatState } from '../../game/types'
+import { CharacterArt, HeartIcon, ShieldIcon } from '../../assets/AssetRegistry'
+import { StatBar } from './Bars'
 import { Floaters } from './Floaters'
-import { SkillBar } from './SkillBar'
+import { OrnatePortrait } from './Frame'
 
-export function PlayerPanel({
-  combat,
-  loadout,
-  firing,
-}: {
-  combat: CombatState
-  loadout: (Skill | null)[]
-  firing: Set<number>
-}) {
+export function PlayerPanel({ combat }: { combat: CombatState }) {
   const p = combat.player
-  const hit = combat.events.some((e) => e.target === 'player' && (e.tone === 'damage' || e.tone === 'magic'))
+  const hit = combat.events.some(
+    (e) => e.target === 'player' && (e.tone === 'damage' || e.tone === 'magic'),
+  )
   return (
-    <div className="player panel">
-      <div className="player-top">
-        <motion.div
-          className="player-art"
-          animate={hit ? { x: [0, -5, 5, -2, 0] } : {}}
-          transition={{ duration: 0.3 }}
-        >
-          <CharacterArt id={combat.setup.character.id} className="art-svg" />
-          <Floaters events={combat.events} target="player" />
+    <div className="player-hud">
+      <div className="player-portrait-wrap">
+        <motion.div animate={hit ? { x: [0, -5, 5, -2, 0] } : {}} transition={{ duration: 0.3 }}>
+          <OrnatePortrait className="player-portrait" glow="var(--teal-lit)">
+            <CharacterArt id={combat.setup.character.id} className="art-svg" />
+          </OrnatePortrait>
         </motion.div>
-        <div className="player-info">
-          <HpRow hp={p.hp} maxHp={p.maxHp} />
-          <ShieldRow shield={p.shield} />
-          <div className="buffs">
-            {p.buffs.map((b) => (
-              <span key={b.stat} className="chip buff">
-                {b.stat} {b.amount} ({b.turns})
-              </span>
-            ))}
-          </div>
+        <Floaters events={combat.events} target="player" />
+      </div>
+      <div className="player-stats">
+        <div className="statrow">
+          <HeartIcon className="stat-ic hp-ic" />
+          <StatBar value={p.hp} max={p.maxHp} color="var(--heal)" height={12} />
+          <span className="stat-num">
+            {Math.max(0, p.hp)}/{p.maxHp}
+          </span>
+        </div>
+        <div className="player-subrow">
+          {p.shield > 0 && (
+            <span className="pip shield">
+              <ShieldIcon className="pip-ic" /> {p.shield}
+            </span>
+          )}
+          {p.buffs.map((b) => (
+            <span key={b.stat} className="pip buff">
+              {b.stat} {b.amount}·{b.turns}
+            </span>
+          ))}
         </div>
       </div>
-      <SkillBar loadout={loadout} firing={firing} />
     </div>
   )
 }

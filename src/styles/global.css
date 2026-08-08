@@ -1,4 +1,5 @@
 @import './tokens.css';
+@import './fonts.css';
 
 * {
   box-sizing: border-box;
@@ -13,12 +14,35 @@ body,
 }
 
 body {
-  background: radial-gradient(120% 80% at 50% 0%, var(--bg-2), var(--bg));
   color: var(--text);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body);
+  font-size: 16px;
   overscroll-behavior: none;
   user-select: none;
   -webkit-user-select: none;
+  /* Desk scene: optional painted image on top of a wood gradient. If the image
+     is absent the gradient shows through (graceful fallback). */
+  background-color: var(--wood-0);
+  background-image:
+    radial-gradient(120% 90% at 50% -10%, rgba(80, 55, 30, 0.55), transparent 60%),
+    radial-gradient(100% 70% at 50% 120%, rgba(0, 0, 0, 0.7), transparent 55%),
+    url('/art/bg-desk.jpg'),
+    repeating-linear-gradient(92deg, #241708 0px, #2c1d0d 3px, #21150a 6px, #2a1b0f 9px);
+  background-size: cover, cover, cover, auto;
+  background-position: center;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+  background-attachment: fixed;
+}
+
+/* subtle grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 #root {
@@ -35,13 +59,16 @@ body {
   padding: var(--safe-top) 0 var(--safe-bottom);
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
 h1,
 h2,
 h3 {
   margin: 0;
+  font-family: var(--font-display);
   font-weight: 700;
+  letter-spacing: 0.03em;
 }
 
 button {
@@ -52,33 +79,53 @@ button {
   cursor: pointer;
 }
 
+/* ── ornate buttons ──────────────────────────────────────────── */
 .btn {
   min-height: var(--tap);
-  padding: 0 var(--sp-4);
+  padding: 0 var(--sp, 18px);
+  padding-inline: 18px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(180deg, var(--accent), #6b5cc0);
-  color: #fff;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 16px;
+  letter-spacing: 0.04em;
+  color: #fff5df;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--sp-2);
-  box-shadow: 0 4px 0 #4b3f8f;
-  transition: transform 0.06s ease;
+  gap: 8px;
+  position: relative;
+  background:
+    linear-gradient(180deg, var(--teal-lit), var(--teal) 55%, var(--teal-dark));
+  border: 2px solid var(--brass);
+  box-shadow: var(--bevel-out), 0 4px 0 #06251f, var(--drop);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  transition: transform 0.06s ease, filter 0.1s ease;
 }
 .btn:active {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 #4b3f8f;
+  box-shadow: var(--bevel-out), 0 2px 0 #06251f, var(--drop);
 }
 .btn:disabled {
-  opacity: 0.45;
-  box-shadow: none;
+  filter: grayscale(0.5) brightness(0.7);
+  opacity: 0.7;
+}
+.btn.gold {
+  background: linear-gradient(180deg, var(--brass-lit), var(--brass) 55%, var(--brass-dark));
+  color: #3a2607;
+  text-shadow: 0 1px 0 rgba(255, 240, 200, 0.5);
+  box-shadow: var(--bevel-out), 0 4px 0 #4a3410, var(--drop);
+}
+.btn.gold:active {
+  box-shadow: var(--bevel-out), 0 2px 0 #4a3410, var(--drop);
 }
 .btn.secondary {
-  background: var(--panel-2);
-  box-shadow: 0 4px 0 #191238;
+  background: linear-gradient(180deg, var(--wood-3), var(--wood-1));
   color: var(--text);
+  box-shadow: var(--bevel-out), 0 4px 0 #120b05, var(--drop);
+}
+.btn.secondary:active {
+  box-shadow: var(--bevel-out), 0 2px 0 #120b05, var(--drop);
 }
 .btn.wide {
   width: 100%;
@@ -88,19 +135,13 @@ button {
   font-size: 19px;
 }
 
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-}
-
 .screen {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: var(--sp-4);
-  gap: var(--sp-3);
+  padding: var(--sp-4, 16px);
+  gap: 12px;
   overflow-y: auto;
 }
 
@@ -113,7 +154,7 @@ button {
 .row {
   display: flex;
   align-items: center;
-  gap: var(--sp-2);
+  gap: 8px;
 }
 .spread {
   justify-content: space-between;

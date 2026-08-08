@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { DieFace } from '../../assets/AssetRegistry'
+import { CompassRose, DieFace } from '../../assets/AssetRegistry'
 import { analyzeCombo } from '../../game/dice'
 
 export function DiceBoard({
@@ -7,15 +7,18 @@ export function DiceBoard({
   rerolls,
   canReroll,
   onReroll,
+  turn,
+  goldGained,
 }: {
   dice: number[] | null
   rerolls: number
   canReroll: boolean
   onReroll: (index: number) => void
+  turn: number
+  goldGained: number
 }) {
   const combo = dice ? analyzeCombo(dice) : null
 
-  // Values that form the winning combo group (highlight the dice showing them).
   const comboValues = new Set<number>()
   if (dice && combo && combo.maxSame >= 2) {
     const counts = new Map<number, number>()
@@ -24,25 +27,33 @@ export function DiceBoard({
   }
 
   return (
-    <div className="diceboard">
+    <div className="board">
+      <CompassRose className="board-compass" />
+      <div className="board-topbar">
+        <span className="turn-tag">Turn {turn}</span>
+        {goldGained > 0 && <span className="gold-tag">+{goldGained}g</span>}
+      </div>
+
       {combo && combo.multiplier > 1 && (
         <div className="combo-badge">
           {combo.hasTriple ? 'TRIPLE' : combo.maxSame >= 4 ? 'QUAD+' : 'DOUBLE'} ×
           {combo.multiplier.toFixed(1)}
         </div>
       )}
+
       <div className="dice-row">
         {(dice ?? [null, null, null]).map((v, i) => (
           <button
             key={i}
-            className={`die ${v == null ? 'die-empty' : ''} ${canReroll && v != null ? 'die-roll' : ''} ${v != null && comboValues.has(v) ? 'die-combo' : ''}`}
+            className={`die ${v == null ? 'die-empty' : ''} ${
+              canReroll && v != null ? 'die-roll' : ''
+            } ${v != null && comboValues.has(v) ? 'die-combo' : ''}`}
             disabled={!canReroll || v == null}
             onClick={() => onReroll(i)}
           >
             {v == null ? (
               <span className="die-q">?</span>
             ) : (
-              // Keyed by value so ONLY the die whose value changed re-animates.
               <AnimatePresence mode="popLayout" initial={false}>
                 <motion.span
                   key={v}
@@ -59,6 +70,7 @@ export function DiceBoard({
           </button>
         ))}
       </div>
+
       {canReroll && (
         <div className="reroll-hint">
           {rerolls > 0 ? `Tap a die to reroll · ${rerolls} left` : 'No rerolls left'}
