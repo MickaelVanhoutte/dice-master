@@ -28,10 +28,12 @@ jobs:
           cache: npm
 
       - name: Install
-        # `npm install` (not `npm ci`): the committed lock is generated on macOS and
-        # omits Linux-only optional deps (rollup/esbuild native binaries). install
-        # honors locked versions and fetches the runner's platform binaries.
-        run: npm install --no-audit --no-fund
+        # The committed lock is generated on macOS and omits Linux-only optional deps
+        # (rollup/esbuild native binaries); npm honors the lock and skips them
+        # (npm/cli#4828). Drop the lock so npm resolves the runner's platform binaries.
+        run: |
+          rm -f package-lock.json
+          npm install --no-audit --no-fund
 
       - name: Test
         run: npm run test
