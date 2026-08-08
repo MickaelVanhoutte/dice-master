@@ -1,0 +1,120 @@
+@import './tokens.css';
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: radial-gradient(120% 80% at 50% 0%, var(--bg-2), var(--bg));
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+}
+
+.app {
+  width: 100%;
+  max-width: 480px;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--safe-top) 0 var(--safe-bottom);
+  position: relative;
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 700;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.btn {
+  min-height: var(--tap);
+  padding: 0 var(--sp-4);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, var(--accent), #6b5cc0);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  box-shadow: 0 4px 0 #4b3f8f;
+  transition: transform 0.06s ease;
+}
+.btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #4b3f8f;
+}
+.btn:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+}
+.btn.secondary {
+  background: var(--panel-2);
+  box-shadow: 0 4px 0 #191238;
+  color: var(--text);
+}
+.btn.wide {
+  width: 100%;
+}
+.btn.big {
+  min-height: 56px;
+  font-size: 19px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.screen {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-4);
+  gap: var(--sp-3);
+  overflow-y: auto;
+}
+
+.dim {
+  color: var(--text-dim);
+}
+.center {
+  text-align: center;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.spread {
+  justify-content: space-between;
+}

@@ -1,0 +1,100 @@
+import type { Monster } from '../game/types'
+
+// Ordered roster. Boss n uses ROSTER[(n-1) % len], scaled by n (scaling.ts),
+// so difficulty climbs forever and the cast cycles at higher power.
+export const MONSTERS: Monster[] = [
+  {
+    id: 'slime',
+    name: 'Green Slime',
+    art: 'mon-slime',
+    baseHp: 40,
+    baseAttack: { physical: 7, magical: 0 },
+    baseShield: 0,
+    passive: { kind: 'none', value: 0, label: 'None' },
+  },
+  {
+    id: 'goblin',
+    name: 'Goblin Raider',
+    art: 'mon-goblin',
+    baseHp: 38,
+    baseAttack: { physical: 9, magical: 0 },
+    baseShield: 0,
+    passive: { kind: 'none', value: 0, label: 'None' },
+  },
+  {
+    id: 'turtle',
+    name: 'Bastion Turtle',
+    art: 'mon-turtle',
+    baseHp: 46,
+    baseAttack: { physical: 6, magical: 0 },
+    baseShield: 12,
+    passive: { kind: 'shieldGain', value: 6, label: 'Gains shield each turn' },
+  },
+  {
+    id: 'wraith',
+    name: 'Hungry Wraith',
+    art: 'mon-wraith',
+    baseHp: 40,
+    baseAttack: { physical: 0, magical: 9 },
+    baseShield: 0,
+    passive: { kind: 'lifesteal', value: 40, label: 'Heals 40% of damage dealt' },
+  },
+  {
+    id: 'golem',
+    name: 'Iron Golem',
+    art: 'mon-golem',
+    baseHp: 50,
+    baseAttack: { physical: 8, magical: 0 },
+    baseShield: 20,
+    passive: { kind: 'shieldReflect', value: 0, label: 'Attacks add its shield as magical' },
+  },
+  {
+    id: 'vampire',
+    name: 'Vampire Lord',
+    art: 'mon-vampire',
+    baseHp: 44,
+    baseAttack: { physical: 10, magical: 0 },
+    baseShield: 0,
+    passive: { kind: 'lifesteal', value: 60, label: 'Heals 60% of damage dealt' },
+  },
+  {
+    id: 'hydra',
+    name: 'Marsh Hydra',
+    art: 'mon-hydra',
+    baseHp: 55,
+    baseAttack: { physical: 8, magical: 4 },
+    baseShield: 0,
+    passive: { kind: 'regen', value: 8, label: 'Regenerates each turn' },
+  },
+  {
+    id: 'direbeast',
+    name: 'Dire Beast',
+    art: 'mon-direbeast',
+    baseHp: 46,
+    baseAttack: { physical: 7, magical: 0 },
+    baseShield: 0,
+    passive: { kind: 'ramp', value: 3, label: 'Attack grows each turn' },
+  },
+  {
+    id: 'thornbeast',
+    name: 'Thornback',
+    art: 'mon-thornbeast',
+    baseHp: 48,
+    baseAttack: { physical: 6, magical: 3 },
+    baseShield: 0,
+    passive: { kind: 'thornsAura', value: 5, label: 'Hurts you when you attack' },
+  },
+  {
+    id: 'lich',
+    name: 'Frost Lich',
+    art: 'mon-lich',
+    baseHp: 42,
+    baseAttack: { physical: 0, magical: 11 },
+    baseShield: 6,
+    passive: { kind: 'regen', value: 6, label: 'Regenerates each turn' },
+  },
+]
+
+export function monsterForBoss(bossIndex: number): Monster {
+  return MONSTERS[(bossIndex - 1) % MONSTERS.length]
+}

@@ -1,0 +1,36 @@
+:root {
+  /* palette */
+  --bg: #0e0b1a;
+  --bg-2: #171130;
+  --panel: #1e1740;
+  --panel-2: #271e52;
+  --line: #3a2f6b;
+  --text: #ece7ff;
+  --text-dim: #a89dd6;
+
+  --accent: #8b7bd8;
+  --accent-2: #b9a6ff;
+
+  --phys: #ff8a5c;
+  --magic: #7bc6ff;
+  --shield: #9fd8ff;
+  --heal: #7be3a3;
+  --gold: #ffd45c;
+  --debuff: #d47bff;
+  --buff: #ffe08a;
+  --danger: #ff5c72;
+
+  /* spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --radius: 14px;
+  --radius-sm: 9px;
+
+  --tap: 44px;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}

@@ -1,0 +1,697 @@
+/* ── shared bits ─────────────────────────────────────────────────────────*/
+.small {
+  font-size: 12px;
+}
+.gap {
+  gap: var(--sp-3);
+}
+.label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.statbar {
+  flex: 1;
+  background: #120d26;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.statbar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+.statrow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.stat-num {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  min-width: 56px;
+  text-align: right;
+  color: var(--text-dim);
+}
+.stat-ic {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.hp-ic {
+  color: var(--heal);
+}
+.shield-ic {
+  color: var(--shield);
+}
+.shield-num {
+  color: var(--shield);
+  min-width: auto;
+}
+.mini-ic {
+  width: 14px;
+  height: 14px;
+}
+
+.chip {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  white-space: nowrap;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.chip.phys {
+  background: rgba(255, 138, 92, 0.18);
+  color: var(--phys);
+}
+.chip.magic {
+  background: rgba(123, 198, 255, 0.18);
+  color: var(--magic);
+}
+.chip.shield {
+  background: rgba(159, 216, 255, 0.18);
+  color: var(--shield);
+}
+.chip.debuff {
+  background: rgba(212, 123, 255, 0.18);
+  color: var(--debuff);
+}
+.chip.buff {
+  background: rgba(255, 224, 138, 0.18);
+  color: var(--buff);
+}
+
+/* ── floaters ────────────────────────────────────────────────────────────*/
+.floaters {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.floater {
+  position: absolute;
+  top: 30%;
+  font-weight: 800;
+  font-size: 18px;
+  text-shadow: 0 2px 4px #000;
+}
+
+/* ── combat layout ───────────────────────────────────────────────────────*/
+.combat {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-3);
+  gap: var(--sp-3);
+}
+
+/* boss */
+.boss {
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.boss-top {
+  display: flex;
+  gap: var(--sp-3);
+}
+.boss-art {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  flex: none;
+}
+.player-art .art-svg,
+.boss-art .art-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+.boss-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.boss-name {
+  font-size: 17px;
+}
+.boss-lvl {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.shieldline {
+  margin-top: -2px;
+}
+.passive {
+  font-size: 12px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--line);
+  padding-top: var(--sp-2);
+}
+.passive-tag {
+  color: var(--accent-2);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  margin-right: 4px;
+}
+
+/* mid board */
+.board-mid {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  position: relative;
+}
+.turn-tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.gold-tag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.diceboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.combo-badge {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 12px rgba(255, 212, 92, 0.5);
+}
+.dice-row {
+  display: flex;
+  gap: var(--sp-3);
+}
+.die {
+  width: 62px;
+  height: 62px;
+  border-radius: 14px;
+  background: linear-gradient(160deg, #f4f0ff, #cfc6f2);
+  box-shadow: 0 5px 0 #8478b0, inset 0 2px 3px #fff;
+  color: #2a2150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.die-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.die-face {
+  width: 46px;
+  height: 46px;
+}
+.die-empty {
+  background: #201943;
+  box-shadow: inset 0 0 0 2px var(--line);
+  color: var(--text-dim);
+}
+.die-q {
+  font-size: 28px;
+  font-weight: 800;
+}
+.die-roll {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+}
+.die-combo {
+  background: linear-gradient(160deg, #fff4d0, #ffd45c);
+  box-shadow: 0 5px 0 #b58a1e, inset 0 2px 3px #fff, 0 0 16px -2px var(--gold);
+  color: #5a4410;
+}
+.reroll-hint {
+  font-size: 12px;
+  color: var(--accent-2);
+}
+
+/* player */
+.combat-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.player {
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.player-top {
+  display: flex;
+  gap: var(--sp-3);
+}
+.player-art {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  flex: none;
+}
+.player-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+.buffs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* skillbar */
+.skillbar {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+.skillslot {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 2px;
+  color: var(--accent-2);
+}
+.skillslot.empty {
+  color: var(--text-dim);
+  opacity: 0.6;
+}
+.skillslot.firing {
+  border-color: currentColor;
+  box-shadow: 0 0 0 2px currentColor, 0 0 14px -2px currentColor;
+  background: #2c2358;
+}
+.slot-num {
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-dim);
+}
+.slot-ic {
+  width: 22px;
+  height: 22px;
+}
+.slot-name {
+  font-size: 9px;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.05;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+.roll-btn {
+  margin-top: 2px;
+}
+
+/* ── menu ────────────────────────────────────────────────────────────────*/
+.menu {
+  justify-content: center;
+  gap: var(--sp-4);
+}
+.title-wrap {
+  text-align: center;
+  margin-top: var(--sp-4);
+}
+.game-title {
+  font-size: 34px;
+  letter-spacing: 0.14em;
+  background: linear-gradient(180deg, var(--accent-2), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.level-card {
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.menu-footer {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: auto;
+}
+.menu-footer .btn {
+  flex: 1;
+  font-size: 13px;
+  min-height: 40px;
+}
+
+/* ── prep ────────────────────────────────────────────────────────────────*/
+.char-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.char-card {
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  text-align: left;
+  align-items: center;
+}
+.char-card-art {
+  width: 56px;
+  height: 56px;
+  flex: none;
+}
+.char-card-body h3 {
+  font-size: 16px;
+}
+.char-strip {
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  align-items: center;
+  text-align: left;
+  width: 100%;
+}
+.char-strip.tappable {
+  border-color: var(--accent);
+}
+.char-strip-body {
+  flex: 1;
+  min-width: 0;
+}
+.char-strip-art {
+  width: 46px;
+  height: 46px;
+  flex: none;
+}
+.swap-hint {
+  font-size: 11px;
+  color: var(--accent-2);
+}
+.hero-choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.prep-slots {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.small-btn {
+  min-height: 36px;
+  font-size: 13px;
+  align-self: flex-start;
+}
+.owned-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.owned-card {
+  display: flex;
+  align-items: stretch;
+  gap: var(--sp-2);
+  padding: var(--sp-2);
+}
+.owned-card.assigned {
+  border-color: var(--accent);
+}
+.owned-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: var(--sp-2);
+  align-items: center;
+  text-align: left;
+}
+.owned-ic {
+  width: 26px;
+  height: 26px;
+  flex: none;
+}
+.owned-text {
+  flex: 1;
+  min-width: 0;
+}
+.owned-name {
+  font-size: 14px;
+  color: var(--text);
+}
+.lvl-tag {
+  font-size: 11px;
+  color: var(--accent-2);
+}
+.slot-hint {
+  font-size: 10px;
+  color: var(--accent);
+}
+.upg-btn {
+  min-height: auto;
+  padding: 0 10px;
+  font-size: 13px;
+  flex: none;
+}
+.enter-btn {
+  margin-top: var(--sp-2);
+}
+
+/* ── reward ──────────────────────────────────────────────────────────────*/
+.reward {
+  justify-content: center;
+  gap: var(--sp-4);
+}
+.victory {
+  color: var(--gold);
+  font-size: 28px;
+}
+.loot-card {
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.loot-breakdown {
+  width: 100%;
+  border-top: 1px solid var(--line);
+  padding-top: var(--sp-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.loot-gold {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--gold);
+}
+.loot-ic {
+  width: 28px;
+  height: 28px;
+}
+.skill-offer {
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  align-items: center;
+}
+.offer-ic {
+  width: 40px;
+  height: 40px;
+  flex: none;
+}
+.offer-text {
+  flex: 1;
+  min-width: 0;
+  color: var(--text);
+}
+.reward-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.rarity {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+.rarity.common {
+  color: var(--text-dim);
+}
+.rarity.rare {
+  color: var(--magic);
+}
+.rarity.epic {
+  color: var(--debuff);
+}
+
+/* ── gameover ────────────────────────────────────────────────────────────*/
+.gameover {
+  justify-content: center;
+  gap: var(--sp-4);
+}
+.defeat {
+  color: var(--danger);
+  font-size: 30px;
+}
+.go-stats {
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.xp-num {
+  color: var(--accent-2);
+}
+.levelup {
+  color: var(--gold);
+  font-weight: 700;
+  text-align: center;
+  border-top: 1px solid var(--line);
+  padding-top: var(--sp-3);
+}
+.go-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+/* ── perks ───────────────────────────────────────────────────────────────*/
+.points-card {
+  padding: var(--sp-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.points-num {
+  font-size: 24px;
+  color: var(--accent-2);
+}
+.perk-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.perk-card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+}
+.perk-info {
+  flex: 1;
+  min-width: 0;
+}
+.perk-current {
+  color: var(--accent-2);
+}
+.perk-buy {
+  min-height: 40px;
+  flex: none;
+  min-width: 64px;
+}
+
+/* ── bestiary ────────────────────────────────────────────────────────────*/
+.tabs {
+  display: flex;
+  gap: 6px;
+}
+.tab {
+  flex: 1;
+  min-height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+  font-size: 12px;
+  font-weight: 700;
+}
+.tab.on {
+  background: var(--panel-2);
+  color: var(--text);
+  border-color: var(--accent);
+}
+.bestiary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bestiary-card {
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  align-items: center;
+}
+.bestiary-card.locked {
+  opacity: 0.55;
+}
+.bestiary-ic {
+  width: 28px;
+  height: 28px;
+  flex: none;
+}
+.bestiary-text {
+  flex: 1;
+  min-width: 0;
+}
+.bestiary-mon {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bestiary-monart {
+  width: 100%;
+  height: 100%;
+}
+.q {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--line);
+}
