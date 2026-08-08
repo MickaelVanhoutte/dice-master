@@ -19,8 +19,8 @@ export function BossPanel({ combat }: { combat: CombatState }) {
 
   return (
     <>
+      <span className="stage-banner">Stage {m.bossIndex}</span>
       <div className="boss-portrait-wrap">
-        <span className="stage-banner">Stage {m.bossIndex}</span>
         <motion.div animate={hit ? { x: [0, -6, 6, -3, 0] } : {}} transition={{ duration: 0.3 }}>
           <OrnatePortrait className="boss-portrait" glow="var(--debuff)" shape="rect">
             <MonsterArt id={m.id} className="art-svg" />
