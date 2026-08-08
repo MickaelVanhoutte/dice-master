@@ -15,6 +15,7 @@ export function PrepScreen() {
   const run = useRun((s) => s.run)
   const setCharacter = useRun((s) => s.setCharacter)
   const setSlot = useRun((s) => s.setSlot)
+  const swapSlots = useRun((s) => s.swapSlots)
   const upgradeSkill = useRun((s) => s.upgradeSkill)
   const startFight = useRun((s) => s.startFight)
   const goTo = useRun((s) => s.goTo)
@@ -24,6 +25,8 @@ export function PrepScreen() {
   const [sel, setSel] = useState(1)
   const [focus, setFocus] = useState<string | null>(null)
   const [heroModal, setHeroModal] = useState(false)
+  const [drag, setDrag] = useState<{ from: number; x: number; y: number } | null>(null)
+  const [over, setOver] = useState<number | null>(null)
 
   if (!run) return null
   const canSwapHero = run.bossIndex === 1 && !combat
@@ -43,6 +46,42 @@ export function PrepScreen() {
     setSlot(sel, id)
     setFocus(id)
     setSel((s) => (s % 6) + 1) // advance to next slot for quick filling
+  }
+
+  // Pointer-drag a loadout slot onto another to swap (touch + mouse).
+  const startDrag = (slot: number, e: React.PointerEvent) => {
+    setSel(slot)
+    if (run.slots[slot]) setFocus(run.slots[slot]!)
+    const sx = e.clientX
+    const sy = e.clientY
+    let moved = false
+    const slotUnder = (ev: PointerEvent): number | null => {
+      const el = document.elementFromPoint(ev.clientX, ev.clientY) as HTMLElement | null
+      const cell = el?.closest('[data-slot]') as HTMLElement | null
+      return cell ? Number(cell.dataset.slot) : null
+    }
+    const move = (ev: PointerEvent) => {
+      if (!moved && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 8) {
+        moved = true
+        setDrag({ from: slot, x: ev.clientX, y: ev.clientY })
+      }
+      if (moved) {
+        setDrag((d) => (d ? { ...d, x: ev.clientX, y: ev.clientY } : d))
+        setOver(slotUnder(ev))
+      }
+    }
+    const up = (ev: PointerEvent) => {
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', up)
+      if (moved) {
+        const to = slotUnder(ev)
+        if (to && to !== slot) swapSlots(slot, to)
+      }
+      setDrag(null)
+      setOver(null)
+    }
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', up)
   }
 
   return (
@@ -82,20 +121,19 @@ export function PrepScreen() {
         </div>
       </button>
 
-      {/* Loadout slots */}
+      {/* Loadout slots — tap to select, drag to swap */}
+      <div className="label slots-hint">Loadout — tap to select · drag to swap</div>
       <div className="slots-row">
         {[1, 2, 3, 4, 5, 6].map((slot) => (
-          <SkillCard
+          <div
             key={slot}
-            skill={loadout[slot]}
-            slot={slot}
-            selected={slot === sel}
-            compact
-            onClick={() => {
-              setSel(slot)
-              if (run.slots[slot]) setFocus(run.slots[slot])
-            }}
-          />
+            className={`slot-wrap ${over === slot ? 'over' : ''} ${drag?.from === slot ? 'dragging' : ''}`}
+            data-slot={slot}
+            style={{ touchAction: 'none' }}
+            onPointerDown={(e) => startDrag(slot, e)}
+          >
+            <SkillCard skill={loadout[slot]} slot={slot} selected={slot === sel} compact />
+          </div>
         ))}
       </div>
 
@@ -161,6 +199,13 @@ export function PrepScreen() {
       <button className="btn gold big wide" onClick={startFight}>
         Enter Battle — Boss {run.bossIndex}
       </button>
+
+      {/* drag ghost */}
+      {drag && (
+        <div className="slot-ghost" style={{ left: drag.x, top: drag.y }}>
+          <SkillCard skill={loadout[drag.from]} slot={drag.from} compact />
+        </div>
+      )}
 
       {/* Hero picker modal */}
       {heroModal && (

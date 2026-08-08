@@ -52,6 +52,7 @@ interface RunStore {
   newRun: (character: Character) => void
   setCharacter: (character: Character) => void
   setSlot: (slot: number, skillId: string | null) => void
+  swapSlots: (a: number, b: number) => void
   upgradeSkill: (skillId: string) => void
   startFight: () => void
   roll: () => void
@@ -161,6 +162,14 @@ export const useRun = create<RunStore>()(
           if (existing > 0 && existing !== slot) slots[existing] = null
         }
         slots[slot] = skillId
+        set({ run: { ...run, slots } })
+      },
+
+      swapSlots: (a, b) => {
+        const run = get().run
+        if (!run || a === b) return
+        const slots = [...run.slots]
+        ;[slots[a], slots[b]] = [slots[b], slots[a]]
         set({ run: { ...run, slots } })
       },
 

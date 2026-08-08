@@ -499,7 +499,24 @@
 .hero-name { font-family: var(--font-display); color: var(--gold-soft); font-size: 15px; }
 .hero-desc { line-height: 1.2; max-height: 2.5em; overflow: hidden; }
 
+.slots-hint { text-align: center; margin-bottom: -2px; }
 .slots-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+.slot-wrap { position: relative; }
+.slot-wrap.dragging .skillcard { opacity: 0.25; }
+.slot-wrap.over .skillcard {
+  border-color: var(--teal-lit);
+  box-shadow: 0 0 0 2px var(--teal-lit), 0 0 14px -2px var(--teal-lit), var(--drop);
+  transform: translateY(-3px);
+}
+.slot-ghost {
+  position: fixed;
+  z-index: 60;
+  width: 58px;
+  transform: translate(-50%, -50%) scale(1.1) rotate(-4deg);
+  pointer-events: none;
+  opacity: 0.95;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.6));
+}
 
 .pool-panel {
   flex: 1;
