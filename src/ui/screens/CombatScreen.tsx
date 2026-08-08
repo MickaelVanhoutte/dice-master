@@ -50,30 +50,27 @@ export function CombatScreen() {
         goldGained={combat.goldGained}
       />
 
-      <div className="combat-bottom">
-        <div className="skillcards">
-          {[1, 2, 3, 4, 5, 6].map((slot) => (
-            <SkillCard
-              key={slot}
-              skill={combat.setup.loadout[slot]}
-              slot={slot}
-              firing={firing.has(slot)}
-              compact
-            />
-          ))}
-        </div>
+      <PlayerPanel combat={combat} />
 
-        <div className="action-bar">
-          <PlayerPanel combat={combat} />
-          <button
-            className={`roll-btn ${phase === 'rolled' ? 'ready' : ''}`}
-            disabled={!action}
-            onClick={() => action?.()}
-          >
-            <span className="roll-label">{label}</span>
-          </button>
-        </div>
+      <div className="skillcards">
+        {[1, 2, 3, 4, 5, 6].map((slot) => (
+          <SkillCard
+            key={slot}
+            skill={combat.setup.loadout[slot]}
+            slot={slot}
+            firing={firing.has(slot)}
+            compact
+          />
+        ))}
       </div>
+
+      <button
+        className={`roll-btn ${phase === 'rolled' ? 'ready' : ''}`}
+        disabled={!action}
+        onClick={() => action?.()}
+      >
+        <span className="roll-label">{label}</span>
+      </button>
     </div>
   )
 }

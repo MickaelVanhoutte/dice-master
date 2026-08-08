@@ -58,11 +58,16 @@ that way — do not import React or stores into `src/game/`.
 
 ## Conventions
 
+- **Landscape only.** The game is designed for landscape (wide) orientation; the PWA
+  manifest requests `landscape` and a `.rotate-gate` overlay (`App.tsx`) tells portrait
+  users to rotate. Design/layout every screen for a short, wide viewport.
 - **No vertical scroll on gameplay screens.** Menu, Prep, Combat, Reward, GameOver must
   fit within `100dvh` — no page scroll. The only things allowed to scroll are modals/drawers
   and bounded catalog lists (Perks, Bestiary) whose header stays fixed while an inner
   `.scroll-area` scrolls. It is a mobile game: it must fit the screen. When adding content
   to a gameplay screen, make it fit (grids, drawers, compaction) — do not let the page grow.
+  Combat is a CSS grid (`grid-template-areas`: boss/board/next, player/skills/roll); Prep is
+  two columns (`.prep-cols`: hero+loadout+desc | pool+start).
 - **No emoji, ever. No raster images baked in.** All visuals are SVG via `AssetRegistry`
   or optional swappable raster in `public/art/`.
 - Engine stays pure + covered by tests in `src/game/*.test.ts`. Add a test when you

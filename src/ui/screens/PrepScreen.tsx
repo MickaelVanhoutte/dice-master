@@ -103,102 +103,106 @@ export function PrepScreen() {
         </div>
       </div>
 
-      {/* Hero */}
-      <button
-        className={`hero-bar ${canSwapHero ? 'tappable' : ''}`}
-        onClick={() => canSwapHero && setHeroModal(true)}
-        disabled={!canSwapHero}
-      >
-        <OrnatePortrait className="hero-bar-portrait" glow="var(--teal-lit)">
-          <CharacterArt id={run.character.id} className="art-svg" />
-        </OrnatePortrait>
-        <div className="hero-bar-body">
-          <div className="row spread">
-            <strong className="hero-name">{run.character.name}</strong>
-            {canSwapHero && <span className="swap-hint">tap to change</span>}
-          </div>
-          <p className="dim small hero-desc">{run.character.desc}</p>
-        </div>
-      </button>
-
-      {/* Loadout slots — tap to select, drag to swap */}
-      <div className="label slots-hint">Loadout — tap to select · drag to swap</div>
-      <div className="slots-row">
-        {[1, 2, 3, 4, 5, 6].map((slot) => (
-          <div
-            key={slot}
-            className={`slot-wrap ${over === slot ? 'over' : ''} ${drag?.from === slot ? 'dragging' : ''}`}
-            data-slot={slot}
-            style={{ touchAction: 'none' }}
-            onPointerDown={(e) => startDrag(slot, e)}
+      <div className="prep-cols">
+        {/* LEFT: hero + loadout + description */}
+        <div className="prep-left">
+          <button
+            className={`hero-bar ${canSwapHero ? 'tappable' : ''}`}
+            onClick={() => canSwapHero && setHeroModal(true)}
+            disabled={!canSwapHero}
           >
-            <SkillCard skill={loadout[slot]} slot={slot} selected={slot === sel} compact />
-          </div>
-        ))}
-      </div>
+            <OrnatePortrait className="hero-bar-portrait" glow="var(--teal-lit)">
+              <CharacterArt id={run.character.id} className="art-svg" />
+            </OrnatePortrait>
+            <div className="hero-bar-body">
+              <div className="row spread">
+                <strong className="hero-name">{run.character.name}</strong>
+                {canSwapHero && <span className="swap-hint">tap to change</span>}
+              </div>
+              <p className="dim small hero-desc">{run.character.desc}</p>
+            </div>
+          </button>
 
-      {/* Item pool */}
-      <div className="pool-panel">
-        <div className="label pool-label">Your Skills — tap to equip in slot {sel}</div>
-        <div className="pool-grid">
-          {run.owned.map((o) => {
-            const base = SKILLS_BY_ID[o.id]
-            if (!base) return null
-            const at = slotOf(o.id)
-            return (
-              <button
-                key={o.id}
-                className={`pool-tile ${focus === o.id ? 'focused' : ''} ${at > 0 ? 'equipped' : ''}`}
-                style={{ color: roleColor(base.art) }}
-                onClick={() => equip(o.id)}
+          <div className="label slots-hint">Loadout — tap to select · drag to swap</div>
+          <div className="slots-row">
+            {[1, 2, 3, 4, 5, 6].map((slot) => (
+              <div
+                key={slot}
+                className={`slot-wrap ${over === slot ? 'over' : ''} ${drag?.from === slot ? 'dragging' : ''}`}
+                data-slot={slot}
+                style={{ touchAction: 'none' }}
+                onPointerDown={(e) => startDrag(slot, e)}
               >
-                {at > 0 && <span className="pool-slot">{at}</span>}
-                <span className="pool-lv">Lv{o.level + 1}</span>
-                <SkillIcon art={base.art} className="pool-ic" />
-                <span className="pool-name">{base.name}</span>
-              </button>
-            )
-          })}
+                <SkillCard skill={loadout[slot]} slot={slot} selected={slot === sel} compact />
+              </div>
+            ))}
+          </div>
+
+          <div className="desc-plaque">
+            {focusSkill ? (
+              <>
+                <div className="row spread">
+                  <strong className="desc-name">{focusSkill.name}</strong>
+                  <span className="lvl-tag">Lv {(focusOwned?.level ?? 0) + 1}</span>
+                </div>
+                <div className="desc-text">{describeSkill(focusSkill, focusOwned?.level ?? 0)}</div>
+                <div className="desc-actions">
+                  <button
+                    className="btn secondary desc-btn"
+                    onClick={() => {
+                      const s = slotOf(focusSkill.id)
+                      if (s > 0) setSlot(s, null)
+                    }}
+                    disabled={slotOf(focusSkill.id) < 1}
+                  >
+                    Unequip
+                  </button>
+                  <button
+                    className="btn gold desc-btn"
+                    disabled={run.gold < focusCost}
+                    onClick={() => upgradeSkill(focusSkill.id)}
+                  >
+                    <GoldIcon className="mini-ic" /> Upgrade {focusCost}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="dim small center">Tap a skill for details, or a slot then a skill to equip.</div>
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT: item pool + start */}
+        <div className="prep-right">
+          <div className="pool-panel">
+            <div className="label pool-label">Your Skills — tap to equip in slot {sel}</div>
+            <div className="pool-grid">
+              {run.owned.map((o) => {
+                const base = SKILLS_BY_ID[o.id]
+                if (!base) return null
+                const at = slotOf(o.id)
+                return (
+                  <button
+                    key={o.id}
+                    className={`pool-tile ${focus === o.id ? 'focused' : ''} ${at > 0 ? 'equipped' : ''}`}
+                    style={{ color: roleColor(base.art) }}
+                    onClick={() => equip(o.id)}
+                  >
+                    {at > 0 && <span className="pool-slot">{at}</span>}
+                    <span className="pool-lv">Lv{o.level + 1}</span>
+                    <SkillIcon art={base.art} className="pool-ic" />
+                    <span className="pool-name">{base.name}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <button className="btn gold big wide" onClick={startFight}>
+            Enter Battle — Boss {run.bossIndex}
+          </button>
         </div>
       </div>
-
-      {/* Description + actions */}
-      <div className="desc-plaque">
-        {focusSkill ? (
-          <>
-            <div className="row spread">
-              <strong className="desc-name">{focusSkill.name}</strong>
-              <span className="lvl-tag">Lv {(focusOwned?.level ?? 0) + 1}</span>
-            </div>
-            <div className="desc-text">{describeSkill(focusSkill, focusOwned?.level ?? 0)}</div>
-            <div className="desc-actions">
-              <button
-                className="btn secondary desc-btn"
-                onClick={() => {
-                  const s = slotOf(focusSkill.id)
-                  if (s > 0) setSlot(s, null)
-                }}
-                disabled={slotOf(focusSkill.id) < 1}
-              >
-                Unequip
-              </button>
-              <button
-                className="btn gold desc-btn"
-                disabled={run.gold < focusCost}
-                onClick={() => upgradeSkill(focusSkill.id)}
-              >
-                <GoldIcon className="mini-ic" /> Upgrade {focusCost}
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="dim small center">Tap a skill to see details, or a slot then a skill to equip.</div>
-        )}
-      </div>
-
-      <button className="btn gold big wide" onClick={startFight}>
-        Enter Battle — Boss {run.bossIndex}
-      </button>
 
       {/* drag ghost */}
       {drag && (

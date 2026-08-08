@@ -18,7 +18,7 @@ export function BossPanel({ combat }: { combat: CombatState }) {
   )
 
   return (
-    <div className="boss">
+    <>
       <div className="boss-portrait-wrap">
         <span className="stage-banner">Stage {m.bossIndex}</span>
         <motion.div animate={hit ? { x: [0, -6, 6, -3, 0] } : {}} transition={{ duration: 0.3 }}>
@@ -63,6 +63,6 @@ export function BossPanel({ combat }: { combat: CombatState }) {
         </div>
         {m.passive.kind !== 'none' && <div className="next-passive">{m.passive.label}</div>}
       </WoodPanel>
-    </div>
+    </>
   )
 }

@@ -192,17 +192,27 @@
    Combat
    ════════════════════════════════════════════════════════════════════════*/
 .combat {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  gap: 10px;
+  height: 100%;
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  grid-template-columns: 150px 1fr 172px;
+  grid-template-rows: 1fr 104px;
+  grid-template-areas:
+    'boss board next'
+    'player skills roll';
 }
 
 /* boss */
-.boss { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start; }
-.boss-portrait-wrap { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.boss-portrait-wrap {
+  grid-area: boss;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  align-self: start;
+}
 .stage-banner {
   align-self: flex-start;
   font-family: var(--font-display);
@@ -226,7 +236,7 @@
   text-align: center;
 }
 
-.next-plaque { width: 150px; padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; }
+.next-plaque { grid-area: next; align-self: start; width: 100%; padding: 8px 10px; display: flex; flex-direction: column; gap: 5px; }
 .next-title {
   font-family: var(--font-display);
   font-size: 11px;
@@ -264,7 +274,7 @@
 
 /* board */
 .board {
-  flex: 1;
+  grid-area: board;
   min-height: 0;
   position: relative;
   display: flex;
@@ -334,19 +344,19 @@
 }
 .reroll-hint { font-size: 12px; color: var(--teal-dark); font-weight: 700; z-index: 2; }
 
-/* bottom */
-.combat-bottom { display: flex; flex-direction: column; gap: 8px; }
-.skillcards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
-.action-bar { display: flex; align-items: center; gap: 10px; }
-
-.player-hud { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; }
+/* bottom row (grid areas) */
+.skillcards { grid-area: skills; display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; align-content: center; }
+.player-hud { grid-area: player; display: flex; align-items: center; gap: 8px; min-width: 0; }
 .player-portrait-wrap { position: relative; flex: none; }
-.player-portrait { width: 60px; height: 60px; }
-.player-stats { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.player-portrait { width: 48px; height: 48px; }
+.player-stats { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .player-subrow { display: flex; flex-wrap: wrap; gap: 4px; }
 
 /* round Roll button */
 .roll-btn {
+  grid-area: roll;
+  justify-self: center;
+  align-self: center;
   flex: none;
   width: 84px;
   height: 84px;
@@ -480,8 +490,12 @@
   color: var(--gold-soft);
   text-shadow: 0 2px 3px #000;
 }
-/* ── prep (fixed, no page scroll) ─────────────────────────────── */
-.prep { padding: 12px; gap: 8px; }
+/* ── prep (fixed, landscape two-column) ───────────────────────── */
+.prep { padding: 10px; gap: 8px; }
+.prep-cols { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.prep-left { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.prep-right { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.prep-left .desc-plaque { margin-top: auto; }
 .hero-bar {
   display: flex;
   gap: 10px;
@@ -745,3 +759,38 @@
 .bestiary-mon { width: 42px; height: 42px; flex: none; display: flex; align-items: center; justify-content: center; }
 .bestiary-monart { width: 100%; height: 100%; border-radius: 8px; }
 .q { font-family: var(--font-display); font-size: 24px; font-weight: 800; color: var(--brass-dark); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   Landscape polish (game is landscape-only)
+   ════════════════════════════════════════════════════════════════════════*/
+.menu,
+.reward,
+.gameover {
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.menu > *,
+.reward > *,
+.gameover > * {
+  width: 100%;
+  max-width: 560px;
+}
+.game-title { font-size: 30px; }
+.title-wrap { margin-top: 0; }
+.menu-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.menu-buttons .btn.big { min-height: 48px; }
+.menu-footer { margin-top: 8px; }
+
+.reward-actions,
+.go-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.skill-offer .skillcard { width: 128px; }
+
+/* two-column catalogs */
+.perk-list.scroll-area,
+.bestiary-list.scroll-area {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  align-content: start;
+}
