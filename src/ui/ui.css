@@ -214,12 +214,12 @@
   display: grid;
   gap: 8px;
   padding: 8px;
-  grid-template-columns: 150px 1fr 184px;
+  grid-template-columns: 1fr;
   grid-template-rows: auto 1fr 84px;
   grid-template-areas:
-    'band band band'
-    'board board board'
-    'player skills roll';
+    'band'
+    'board'
+    'skills';
 }
 
 .combat-exit {
@@ -420,7 +420,7 @@
 .die-done { opacity: 0.45; }
 .reroll-hint { font-size: 12px; color: var(--teal-lit); font-weight: 700; z-index: 2; text-shadow: 0 1px 3px #000; }
 
-/* bottom row (grid areas) */
+/* bottom row: skills centered full-width; HUD + Roll floated to the corners */
 .skillcards {
   grid-area: skills;
   display: flex;
@@ -428,14 +428,18 @@
   justify-content: center;
   align-items: center;
 }
-.skillcards > * { flex: 1 1 0; max-width: 96px; min-width: 0; }
+.skillcards > * { width: 74px; flex: none; }
 /* unified HUD: portrait + health + shield as one panel, bottom-left */
 .player-hud {
-  grid-area: player;
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 10;
+  width: 150px;
+  height: 84px;
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: 0;
   padding: 6px 8px;
   border-radius: 12px;
   background: rgba(18, 11, 5, 0.4);
@@ -450,9 +454,10 @@
 
 /* round Roll button */
 .roll-btn {
-  grid-area: roll;
-  justify-self: center;
-  align-self: center;
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  z-index: 10;
   flex: none;
   width: 90px;
   height: 90px;
@@ -463,7 +468,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
   transition: transform 0.12s ease, filter 0.12s ease;
 }
 .roll-btn:hover:not(:disabled) { transform: scale(1.05); }
