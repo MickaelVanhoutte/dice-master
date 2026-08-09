@@ -58,9 +58,6 @@ export function BossPanel({ combat }: { combat: CombatState }) {
           <span className="next-num shd-num">{m.shield}</span>
         </div>
         <div className="next-tags">
-          {esc > 1 && (
-            <span className="tag rage">▲ +{Math.round((esc - 1) * 100)}% dmg</span>
-          )}
           {weaken > 0 && <span className="tag debuff">weaken {weaken}</span>}
           {poison > 0 && <span className="tag debuff">poison {poison}</span>}
           {curse > 0 && <span className="tag debuff">+{curse}%</span>}

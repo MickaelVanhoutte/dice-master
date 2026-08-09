@@ -477,7 +477,7 @@
 .sc-row.bonus { opacity: 0.85; }
 .sc-row.bonus::before { content: '◇'; font-size: 8px; margin-right: 1px; }
 .sc-row-ic { width: 11px; height: 11px; }
-.skillcard.compact { padding: 3px 3px 4px; gap: 1px; }
+.skillcard.compact { height: 66px; overflow: hidden; padding: 3px 3px 4px; gap: 1px; }
 .skillcard.compact .sc-name { display: none; }
 .skillcard.compact .sc-die { width: 15px; height: 15px; }
 .skillcard.compact .sc-icon { width: 20px; height: 20px; }
@@ -514,7 +514,7 @@
 /* ── prep (fixed landscape two-column; deterministic, no scroll) ── */
 .prep { padding: 8px 10px; gap: 6px; }
 .prep-cols { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.prep-left { display: grid; grid-template-rows: auto auto auto 1fr; gap: 6px; min-height: 0; }
+.prep-left { display: flex; flex-direction: column; gap: 6px; min-height: 0; }
 .prep-right { display: grid; grid-template-rows: 1fr auto; gap: 8px; min-height: 0; }
 .hero-bar {
   display: flex;
@@ -902,8 +902,8 @@
 }
 .pts-lbl { font-size: 11px; color: var(--brass-lit); font-weight: 700; }
 
-/* prep desc fills its grid cell without forcing overflow */
-.prep-left .desc-plaque { min-height: 0; overflow: hidden; justify-content: flex-start; }
+/* prep desc: natural height so Unequip/Upgrade buttons are always visible */
+.prep-left .desc-plaque { margin-top: auto; min-height: 0; overflow: visible; }
 
 /* short landscape: prep + reward stay fitted */
 @media (max-height: 400px) {
