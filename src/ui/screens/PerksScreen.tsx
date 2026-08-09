@@ -22,14 +22,15 @@ export function PerksScreen() {
   return (
     <div className="screen perks">
       <div className="row spread">
-        <h2>Character Perks</h2>
-        <button className="btn secondary" onClick={() => goTo('menu')}>
+        <div className="row gap">
+          <h2>Character Perks</h2>
+          <span className="points-inline">
+            {meta.perkPoints} <span className="pts-lbl">pts</span>
+          </span>
+        </div>
+        <button className="btn secondary small-btn" onClick={() => goTo('menu')}>
           Back
         </button>
-      </div>
-      <div className="panel points-card">
-        <span>Perk points</span>
-        <strong className="points-num">{meta.perkPoints}</strong>
       </div>
 
       <div className="perk-list scroll-area">

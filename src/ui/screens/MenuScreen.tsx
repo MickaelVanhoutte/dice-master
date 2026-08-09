@@ -16,6 +16,7 @@ export function MenuScreen() {
 
   return (
     <div className="screen menu">
+      <div className="menu-inner">
       <div className="title-wrap">
         <h1 className="game-title">DICE MASTERS</h1>
         <p className="dim center">A dice-driven roguelike</p>
@@ -28,7 +29,7 @@ export function MenuScreen() {
             {meta.perkPoints} perk point{meta.perkPoints === 1 ? '' : 's'}
           </span>
         </div>
-        <StatBar value={info.intoLevel} max={info.span} color="var(--accent-2)" />
+        <StatBar value={info.intoLevel} max={info.span} color="var(--teal-lit)" />
         <div className="dim small">
           {info.intoLevel}/{info.span} XP to next level
         </div>
@@ -72,6 +73,7 @@ export function MenuScreen() {
         <button className="btn secondary" onClick={() => meta.toggleMute()}>
           Sound: {meta.muted ? 'Off' : 'On'}
         </button>
+      </div>
       </div>
     </div>
   )

@@ -53,14 +53,14 @@ export function DiceBoard({
             {v == null ? (
               <span className="die-q">?</span>
             ) : (
-              <AnimatePresence mode="popLayout" initial={false}>
+              <AnimatePresence mode="popLayout">
                 <motion.span
                   key={v}
                   className="die-inner"
-                  initial={{ rotate: -90, scale: 0.4, opacity: 0 }}
+                  initial={{ rotate: -220, scale: 0.3, opacity: 0 }}
                   animate={{ rotate: 0, scale: 1, opacity: 1 }}
-                  exit={{ opacity: 0, scale: 0.4 }}
-                  transition={{ type: 'spring', stiffness: 320, damping: 16 }}
+                  exit={{ rotate: 120, scale: 0.3, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 260, damping: 13, delay: i * 0.06 }}
                 >
                   <DieFace value={v} className="die-face" />
                 </motion.span>
