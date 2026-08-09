@@ -18,16 +18,20 @@ export function BossPanel({ combat }: { combat: CombatState }) {
   )
 
   return (
-    <>
+    <div className="boss-band">
       <span className="stage-banner">Stage {m.bossIndex}</span>
-      <div className="boss-portrait-wrap">
-        <motion.div animate={hit ? { x: [0, -6, 6, -3, 0] } : {}} transition={{ duration: 0.3 }}>
+      <div className="boss-box">
+        <motion.div
+          className="boss-box-art"
+          animate={hit ? { x: [0, -6, 6, -3, 0] } : {}}
+          transition={{ duration: 0.3 }}
+        >
           <OrnatePortrait className="boss-portrait" glow="var(--debuff)" shape="rect">
             <MonsterArt id={m.id} className="art-svg" />
           </OrnatePortrait>
         </motion.div>
         <Floaters events={combat.events} target="monster" />
-        <div className="boss-nameplate">{m.name}</div>
+        <div className="boss-name-cap">{m.name}</div>
       </div>
 
       <WoodPanel className="next-plaque">
@@ -63,6 +67,6 @@ export function BossPanel({ combat }: { combat: CombatState }) {
         </div>
         {m.passive.kind !== 'none' && <div className="next-passive">{m.passive.label}</div>}
       </WoodPanel>
-    </>
+    </div>
   )
 }

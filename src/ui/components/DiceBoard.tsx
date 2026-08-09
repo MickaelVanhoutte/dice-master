@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { CompassRose, DieFace } from '../../assets/AssetRegistry'
+import { DieFace } from '../../assets/AssetRegistry'
 import { analyzeCombo } from '../../game/dice'
 
 export function DiceBoard({
@@ -28,7 +28,6 @@ export function DiceBoard({
 
   return (
     <div className="board">
-      <CompassRose className="board-compass" />
       <div className="board-topbar">
         <span className="turn-tag">Turn {turn}</span>
         {goldGained > 0 && <span className="gold-tag">+{goldGained}g</span>}

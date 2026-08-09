@@ -193,32 +193,31 @@
    ════════════════════════════════════════════════════════════════════════*/
 .combat {
   height: 100%;
+  position: relative;
   display: grid;
   gap: 8px;
   padding: 8px;
   grid-template-columns: 150px 1fr 184px;
-  grid-template-rows: auto 1fr 100px;
+  grid-template-rows: auto 1fr 84px;
   grid-template-areas:
-    'stage boss next'
+    'band band band'
     'board board board'
     'player skills roll';
 }
 
-/* boss */
-.boss-portrait-wrap {
-  grid-area: boss;
-  position: relative;
+/* boss + stats band (equal-size boxes, side by side) */
+.boss-band {
+  grid-area: band;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  align-self: start;
-  justify-self: center;
+  justify-content: center;
+  align-items: stretch;
+  gap: 10px;
 }
 .stage-banner {
-  grid-area: stage;
-  align-self: start;
-  justify-self: start;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 4;
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 12px;
@@ -230,17 +229,34 @@
   border-radius: 6px;
   box-shadow: var(--drop);
 }
-.boss-portrait { width: 116px; height: 96px; }
-.boss-nameplate {
+.boss-box { position: relative; width: 188px; height: 94px; }
+.boss-box-art { width: 100%; height: 100%; }
+.boss-portrait { width: 100%; height: 100%; }
+.boss-name-cap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  text-align: center;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 14px;
+  font-size: 12px;
   color: var(--gold-soft);
-  text-shadow: 0 2px 3px #000;
-  text-align: center;
+  padding: 6px 4px 3px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+  border-radius: 0 0 12px 12px;
 }
 
-.next-plaque { grid-area: next; align-self: start; width: 100%; padding: 8px 10px; display: flex; flex-direction: column; gap: 5px; }
+.next-plaque {
+  width: 188px;
+  height: 94px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+}
 .next-title {
   font-family: var(--font-display);
   font-size: 11px;
@@ -276,12 +292,9 @@
   line-height: 1.2;
 }
 
-/* board */
+/* board — dice sit directly on the desk background (no tray) */
 .board {
   grid-area: board;
-  justify-self: center;
-  width: 100%;
-  max-width: 640px;
   min-height: 0;
   position: relative;
   display: flex;
@@ -289,37 +302,35 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background: linear-gradient(160deg, var(--parch-1), var(--parch-3));
-  border: 3px solid var(--brass);
-  border-radius: 16px;
-  box-shadow: var(--drop), inset 0 0 40px rgba(140, 100, 50, 0.35);
-  overflow: hidden;
-}
-.board-compass {
-  position: absolute;
-  width: 78%;
-  max-width: 300px;
-  color: #8a6a3a;
-  opacity: 0.22;
-  pointer-events: none;
 }
 .board-topbar {
   position: absolute;
-  top: 8px;
-  left: 10px;
-  right: 10px;
+  top: 4px;
+  left: 8px;
+  right: 8px;
   display: flex;
   justify-content: space-between;
 }
-.turn-tag { font-family: var(--font-display); font-size: 12px; color: var(--ink-dim); }
-.gold-tag { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: #9a6b16; }
+.turn-tag {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--text-dim);
+  text-shadow: 0 1px 3px #000;
+}
+.gold-tag {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--gold);
+  text-shadow: 0 1px 3px #000;
+}
 .combo-badge {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 15px;
-  color: #8a5a12;
+  font-size: 16px;
+  color: var(--gold);
   letter-spacing: 0.06em;
-  text-shadow: 0 0 10px rgba(255, 200, 90, 0.7);
+  text-shadow: 0 0 12px rgba(255, 200, 90, 0.8), 0 2px 4px #000;
   z-index: 2;
 }
 
@@ -339,10 +350,10 @@
 .die-inner { display: flex; align-items: center; justify-content: center; }
 .die-face { width: 42px; height: 42px; }
 .die-empty {
-  background: transparent;
-  border: 2px dashed rgba(120, 92, 50, 0.5);
-  box-shadow: none;
-  color: rgba(120, 92, 50, 0.6);
+  background: rgba(30, 20, 10, 0.25);
+  border: 2px dashed rgba(255, 245, 220, 0.55);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  color: rgba(255, 245, 220, 0.7);
 }
 .die-q { font-family: var(--font-display); font-size: 24px; font-weight: 800; }
 .die-roll { outline: 3px solid var(--teal-lit); outline-offset: 2px; }
@@ -351,7 +362,7 @@
   box-shadow: 0 5px 0 #b58a1e, inset 0 2px 3px #fff, 0 0 18px -2px var(--gold);
   color: #5a4410;
 }
-.reroll-hint { font-size: 12px; color: var(--teal-dark); font-weight: 700; z-index: 2; }
+.reroll-hint { font-size: 12px; color: var(--teal-lit); font-weight: 700; z-index: 2; text-shadow: 0 1px 3px #000; }
 
 /* bottom row (grid areas) */
 .skillcards { grid-area: skills; display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; align-content: center; }
@@ -472,7 +483,14 @@
 .sc-row.bonus { opacity: 0.85; }
 .sc-row.bonus::before { content: '◇'; font-size: 8px; margin-right: 1px; }
 .sc-row-ic { width: 11px; height: 11px; }
+.skillcard.compact { padding: 3px 3px 4px; gap: 1px; }
 .skillcard.compact .sc-name { display: none; }
+.skillcard.compact .sc-die { width: 15px; height: 15px; }
+.skillcard.compact .sc-icon { width: 20px; height: 20px; }
+.skillcard.compact .sc-lv { font-size: 8px; top: 1px; right: 2px; }
+.skillcard.compact .sc-rows { gap: 1px 3px; }
+.skillcard.compact .sc-row { font-size: 9px; }
+.skillcard.compact .sc-row-ic { width: 10px; height: 10px; }
 
 /* ════════════════════════════════════════════════════════════════════════
    Menu
