@@ -27,8 +27,14 @@ export function PrepScreen() {
   const [heroModal, setHeroModal] = useState(false)
   const [drag, setDrag] = useState<{ from: number; x: number; y: number } | null>(null)
   const [over, setOver] = useState<number | null>(null)
+  const [page, setPage] = useState(0)
 
   if (!run) return null
+
+  const PAGE_SIZE = 15 // 5 cols x 3 rows — fits without scrolling
+  const pageCount = Math.max(1, Math.ceil(run.owned.length / PAGE_SIZE))
+  const curPage = Math.min(page, pageCount - 1)
+  const pageOwned = run.owned.slice(curPage * PAGE_SIZE, curPage * PAGE_SIZE + PAGE_SIZE)
   const canSwapHero = run.bossIndex === 1 && !combat
 
   const loadout = [
@@ -175,9 +181,32 @@ export function PrepScreen() {
         {/* RIGHT: item pool + start */}
         <div className="prep-right">
           <div className="pool-panel">
-            <div className="label pool-label">Your Skills — tap to equip in slot {sel}</div>
+            <div className="row spread pool-head">
+              <span className="label pool-label">Skills — tap to equip in slot {sel}</span>
+              {pageCount > 1 && (
+                <span className="pager">
+                  <button
+                    className="pager-btn"
+                    onClick={() => setPage((p) => Math.max(0, p - 1))}
+                    disabled={curPage === 0}
+                  >
+                    ‹
+                  </button>
+                  <span className="pager-num">
+                    {curPage + 1}/{pageCount}
+                  </span>
+                  <button
+                    className="pager-btn"
+                    onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
+                    disabled={curPage >= pageCount - 1}
+                  >
+                    ›
+                  </button>
+                </span>
+              )}
+            </div>
             <div className="pool-grid">
-              {run.owned.map((o) => {
+              {pageOwned.map((o) => {
                 const base = SKILLS_BY_ID[o.id]
                 if (!base) return null
                 const at = slotOf(o.id)
