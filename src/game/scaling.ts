@@ -9,6 +9,12 @@ export const SCALING = {
   shieldGrowth: 1.22,
   goldBase: 12,
   goldGrowth: 1.18,
+  turnEscalation: 0.14, // boss damage grows +14% of base each turn (anti-stall)
+}
+
+// Multiplier on a boss's attack for a given turn (turn 1 = 1.0).
+export function attackEscalation(turn: number): number {
+  return 1 + SCALING.turnEscalation * Math.max(0, turn - 1)
 }
 
 export function scaleMonster(base: Monster, bossIndex: number): MonsterCombat {

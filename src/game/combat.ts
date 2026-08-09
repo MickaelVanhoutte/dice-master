@@ -2,6 +2,7 @@ import type { CombatSetup, CombatState, MonsterCombat } from './types'
 import type { RNG } from './rng'
 import { analyzeCombo, rollDice } from './dice'
 import { applyEffect, evalCondition, pushEvent, sumMod, takenMult, tickMods } from './effects'
+import { attackEscalation } from './scaling'
 
 export function diceCount(setup: CombatSetup): number {
   return 3 + setup.perks.extraDice
@@ -164,10 +165,11 @@ export function resolveMonsterTurn(state: CombatState): CombatState {
       break
   }
 
-  // Compute attack, applying weaken, resists, character mitigation.
+  // Compute attack, applying per-turn escalation, weaken, resists, mitigation.
+  const esc = attackEscalation(s.turn)
   const weaken = sumMod(m, 'weaken')
-  let phys = Math.max(0, m.attack.physical - weaken)
-  let mag = m.attack.magical + reflectMagical
+  let phys = Math.max(0, m.attack.physical * esc - weaken)
+  let mag = (m.attack.magical + reflectMagical) * esc
   const tMult = takenMult(character, p, s.lastComboDouble)
   phys = Math.round(phys * (1 - perks.physResistPct) * tMult)
   mag = Math.round(mag * (1 - perks.magResistPct) * tMult)

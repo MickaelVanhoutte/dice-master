@@ -76,6 +76,7 @@
   border-radius: 999px;
 }
 .tag.debuff { background: rgba(176, 106, 214, 0.2); color: var(--debuff); }
+.tag.rage { background: rgba(210, 65, 54, 0.22); color: var(--danger); }
 
 /* ════════════════════════════════════════════════════════════════════════
    Frame components

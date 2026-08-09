@@ -5,11 +5,13 @@ import { StatBar } from './Bars'
 import { Floaters } from './Floaters'
 import { OrnatePortrait, WoodPanel } from './Frame'
 import { sumMod } from '../../game/effects'
+import { attackEscalation } from '../../game/scaling'
 
 export function BossPanel({ combat }: { combat: CombatState }) {
   const m = combat.monster
-  const phys = m.attack.physical
-  const mag = m.attack.magical
+  const esc = attackEscalation(combat.turn)
+  const phys = Math.max(0, Math.round(m.attack.physical * esc) - sumMod(m, 'weaken'))
+  const mag = Math.round(m.attack.magical * esc)
   const weaken = sumMod(m, 'weaken')
   const poison = sumMod(m, 'poison')
   const curse = sumMod(m, 'curse')
@@ -39,7 +41,7 @@ export function BossPanel({ combat }: { combat: CombatState }) {
         <div className="next-attacks">
           {phys > 0 && (
             <span className="next-atk phys">
-              <SkillIcon art="skill-phys" className="next-ic" /> {Math.max(0, phys - weaken)}
+              <SkillIcon art="skill-phys" className="next-ic" /> {phys}
             </span>
           )}
           {mag > 0 && (
@@ -61,6 +63,9 @@ export function BossPanel({ combat }: { combat: CombatState }) {
           </div>
         </div>
         <div className="next-tags">
+          {esc > 1 && (
+            <span className="tag rage">▲ +{Math.round((esc - 1) * 100)}% dmg</span>
+          )}
           {weaken > 0 && <span className="tag debuff">weaken {weaken}</span>}
           {poison > 0 && <span className="tag debuff">poison {poison}</span>}
           {curse > 0 && <span className="tag debuff">+{curse}%</span>}

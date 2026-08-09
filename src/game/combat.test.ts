@@ -118,6 +118,26 @@ describe('debuffs', () => {
   })
 })
 
+describe('per-turn damage escalation', () => {
+  it('boss hits harder on later turns', () => {
+    const s = setup({})
+    const mk = () => {
+      const st = initCombat(s, monster({ attack: { physical: 10, magical: 0 } }), 100, 100)
+      st.phase = 'monster'
+      st.player.shield = 0
+      return st
+    }
+    const t1 = mk()
+    t1.turn = 1
+    const t3 = mk()
+    t3.turn = 3
+    const dmg1 = 100 - resolveMonsterTurn(t1).player.hp
+    const dmg3 = 100 - resolveMonsterTurn(t3).player.hp
+    expect(dmg1).toBe(10) // turn 1 = base
+    expect(dmg3).toBeGreaterThan(dmg1) // escalates
+  })
+})
+
 describe('win/lose transitions', () => {
   it('marks won when monster hp hits 0', () => {
     const s = setup({ 1: 'overload' }) // mag 22

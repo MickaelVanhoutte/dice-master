@@ -126,10 +126,15 @@ export const useRun = create<RunStore>()(
         meta.markSkillsSeen(STARTER_SKILL_IDS)
         const perks = currentPerks()
         const maxHp = baseMaxHp() + perks.bonusMaxHp + (character.bonusMaxHp ?? 0)
+        // Start with the full unlocked collection equippable (starters + everything
+        // ever discovered), each at level 0.
+        const unlocked = [...new Set([...STARTER_SKILL_IDS, ...meta.seenSkills])].filter(
+          (id) => SKILLS_BY_ID[id],
+        )
         const run: RunState = {
           character,
           slots: [...DEFAULT_SLOTS],
-          owned: STARTER_SKILL_IDS.map((id) => ({ id, level: 0 })),
+          owned: unlocked.map((id) => ({ id, level: 0 })),
           gold: perks.startGold,
           hp: maxHp,
           maxHp,
