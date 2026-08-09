@@ -169,7 +169,9 @@ export interface CombatState {
   goldGained: number
   turn: number
   lastComboDouble: boolean // whether last resolved roll had a double+ (for characters)
-  resolveIndex: number // during 'resolving', index of the next die to apply
+  resolveIndex: number // during 'resolving', index of the die being applied
+  effIndex: number // index of the next effect within the current die's queue
+  pendingEffs: Effect[] // effects queued for the current die (base + met conditional)
   turnDealtDamage: boolean // whether the player dealt damage this turn (for thornsAura)
   phase: CombatPhase
   events: CombatEvent[]

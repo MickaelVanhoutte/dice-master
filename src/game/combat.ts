@@ -1,4 +1,4 @@
-import type { CombatSetup, CombatState, MonsterCombat } from './types'
+import type { CombatSetup, CombatState, Effect, MonsterCombat } from './types'
 import type { RNG } from './rng'
 import { analyzeCombo, rollDice, type ComboInfo } from './dice'
 import { applyEffect, evalCondition, pushEvent, sumMod, takenMult, tickMods } from './effects'
@@ -29,6 +29,8 @@ export function initCombat(
     turn: 1,
     lastComboDouble: false,
     resolveIndex: 0,
+    effIndex: 0,
+    pendingEffs: [],
     turnDealtDamage: false,
     phase: 'player',
     events: [],
@@ -144,6 +146,8 @@ export function startResolve(state: CombatState): CombatState {
   applyPerTurn(s)
   s.turnDealtDamage = false
   s.resolveIndex = 0
+  s.effIndex = 0
+  s.pendingEffs = []
   s.phase = 'resolving'
   return s
 }
@@ -155,7 +159,26 @@ function nextFiringIndex(s: CombatState, dice: number[], from: number): number {
   return i
 }
 
-// Resolve exactly one firing die, then either continue, win, or end the turn.
+// The effect queue for a die: base effects + conditional bonus if the condition holds.
+function dieEffects(s: CombatState, value: number, combo: ComboInfo): Effect[] {
+  const skill = s.setup.loadout[value]
+  if (!skill) return []
+  const list = [...skill.effects]
+  if (skill.conditional && evalCondition(skill.conditional.when, s, combo)) {
+    list.push(...skill.conditional.bonus)
+  }
+  return list
+}
+
+function finishResolve(s: CombatState): void {
+  applyThorns(s)
+  s.dice = null
+  s.pendingEffs = []
+  s.phase = s.player.hp <= 0 ? 'lost' : 'monster'
+}
+
+// Resolve exactly ONE effect per call, so multi-effect skills reveal each
+// value one after another. Advances die-by-die, effect-by-effect.
 export function resolveStep(state: CombatState): CombatState {
   if (state.phase !== 'resolving' || !state.dice) return state
   const s = clone(state)
@@ -163,25 +186,42 @@ export function resolveStep(state: CombatState): CombatState {
   const dice = s.dice as number[]
   const combo = analyzeCombo(dice)
 
-  const i = nextFiringIndex(s, dice, s.resolveIndex)
-  if (i < dice.length) {
-    if (applySkillForDie(s, dice[i], combo)) s.turnDealtDamage = true
-    s.resolveIndex = i + 1
-  } else {
-    s.resolveIndex = dice.length
+  // Load the next firing die's effect queue if the current one is exhausted.
+  if (s.pendingEffs.length === 0) {
+    const i = nextFiringIndex(s, dice, s.resolveIndex)
+    if (i >= dice.length) {
+      finishResolve(s)
+      return s
+    }
+    s.resolveIndex = i
+    s.pendingEffs = dieEffects(s, dice[i], combo)
+    s.effIndex = 0
+    if (s.pendingEffs.length === 0) {
+      s.resolveIndex = i + 1
+      return s
+    }
+  }
+
+  // Apply one effect.
+  const eff = s.pendingEffs[s.effIndex]
+  if (eff.kind === 'damage') s.turnDealtDamage = true
+  applyEffect(s, eff, { combo })
+  s.effIndex += 1
+  if (s.effIndex >= s.pendingEffs.length) {
+    s.pendingEffs = []
+    s.resolveIndex += 1
   }
 
   if (s.monster.hp <= 0) {
     s.dice = null
+    s.pendingEffs = []
     s.phase = 'won'
     s.log.push(`${s.monster.name} defeated!`)
     return s
   }
 
-  if (nextFiringIndex(s, dice, s.resolveIndex) >= dice.length) {
-    applyThorns(s)
-    s.dice = null
-    s.phase = s.player.hp <= 0 ? 'lost' : 'monster'
+  if (s.pendingEffs.length === 0 && nextFiringIndex(s, dice, s.resolveIndex) >= dice.length) {
+    finishResolve(s)
   }
   return s
 }

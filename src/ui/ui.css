@@ -265,7 +265,7 @@
   border-radius: 6px;
   box-shadow: var(--drop);
 }
-.boss-box { position: relative; width: 188px; height: 94px; }
+.boss-box { position: relative; width: 188px; min-height: 94px; }
 .boss-box-art { width: 100%; height: 100%; }
 .boss-portrait { width: 100%; height: 100%; }
 .boss-name-cap {
@@ -287,13 +287,13 @@
 
 .next-plaque {
   width: 188px;
-  height: 94px;
+  min-height: 94px;
   padding: 6px 10px;
   display: flex;
   flex-direction: column;
   gap: 3px;
-  overflow: hidden;
 }
+.next-passive { white-space: normal; }
 .next-attacks { display: flex; gap: 8px; justify-content: center; }
 .next-atk {
   display: inline-flex;
@@ -420,11 +420,11 @@
 .die-done { opacity: 0.45; }
 .reroll-hint { font-size: 12px; color: var(--teal-lit); font-weight: 700; z-index: 2; text-shadow: 0 1px 3px #000; }
 
-/* bottom bar: HUD (left) · skills (centered) · Roll (right), one baseline */
+/* bottom bar: HUD (left) · skills (centered between HUD & Roll) · Roll (right) */
 .skillcards {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 166px; /* clear the HUD */
+  right: 112px; /* clear the Roll button */
   bottom: 8px;
   height: 84px;
   z-index: 5;
@@ -433,7 +433,7 @@
   justify-content: center;
   align-items: center;
 }
-.skillcards > * { width: 74px; flex: none; }
+.skillcards > * { flex: 1 1 0; max-width: 78px; min-width: 0; }
 /* unified HUD: portrait + health + shield as one panel, bottom-left */
 .player-hud {
   position: absolute;

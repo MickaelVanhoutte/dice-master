@@ -19,10 +19,10 @@ export function CombatScreen() {
   // Resolve dice one at a time with a beat between each.
   useEffect(() => {
     if (combat?.phase === 'resolving') {
-      const t = setTimeout(resolveStep, 620)
+      const t = setTimeout(resolveStep, 560)
       return () => clearTimeout(t)
     }
-  }, [combat?.phase, combat?.resolveIndex, resolveStep])
+  }, [combat?.phase, combat?.resolveIndex, combat?.effIndex, resolveStep])
 
   useEffect(() => {
     if (combat?.phase === 'monster') {
