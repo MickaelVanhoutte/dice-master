@@ -42,6 +42,7 @@ export function PrepScreen() {
     ...[1, 2, 3, 4, 5, 6].map((i) => (run.slots[i] ? SKILLS_BY_ID[run.slots[i]!] : null)),
   ]
   const slotOf = (id: string) => run.slots.indexOf(id)
+  const levelOf = (id?: string | null) => (id ? (run.owned.find((o) => o.id === id)?.level ?? 0) : 0)
   const focusOwned = focus ? run.owned.find((o) => o.id === focus) : undefined
   const focusSkill = focus ? SKILLS_BY_ID[focus] : undefined
   const focusCost = focusSkill
@@ -139,7 +140,13 @@ export function PrepScreen() {
                 style={{ touchAction: 'none' }}
                 onPointerDown={(e) => startDrag(slot, e)}
               >
-                <SkillCard skill={loadout[slot]} slot={slot} selected={slot === sel} compact />
+                <SkillCard
+                  skill={loadout[slot]}
+                  level={levelOf(run.slots[slot])}
+                  slot={slot}
+                  selected={slot === sel}
+                  compact
+                />
               </div>
             ))}
           </div>
@@ -236,7 +243,7 @@ export function PrepScreen() {
       {/* drag ghost */}
       {drag && (
         <div className="slot-ghost" style={{ left: drag.x, top: drag.y }}>
-          <SkillCard skill={loadout[drag.from]} slot={drag.from} compact />
+          <SkillCard skill={loadout[drag.from]} level={levelOf(run.slots[drag.from])} slot={drag.from} compact />
         </div>
       )}
 

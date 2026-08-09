@@ -861,6 +861,22 @@
 .menu-buttons .btn.big { min-height: 46px; font-size: 17px; }
 .menu-footer .btn { min-height: 38px; }
 
+/* shrink combat on short landscape so it always fits */
+@media (max-height: 400px) {
+  .combat { grid-template-rows: auto 1fr 74px; gap: 6px; padding: 6px; }
+  .boss-box,
+  .next-plaque { width: 168px; height: 78px; }
+  .boss-name-cap { font-size: 11px; padding: 5px 4px 2px; }
+  .next-plaque { padding: 4px 8px; gap: 2px; }
+  .next-title { padding-bottom: 2px; }
+  .die { width: 50px; height: 50px; }
+  .die-face { width: 36px; height: 36px; }
+  .roll-btn { width: 68px; height: 68px; }
+  .roll-btn .roll-label { font-size: 16px; }
+  .player-portrait { width: 42px; height: 42px; }
+  .skillcards { gap: 4px; }
+}
+
 /* shrink on short landscape so it always fits without scrolling */
 @media (max-height: 400px) {
   .menu-inner { gap: 6px; }

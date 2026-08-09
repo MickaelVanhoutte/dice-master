@@ -160,10 +160,24 @@ export const useRun = create<RunStore>()(
       setSlot: (slot, skillId) => {
         const run = get().run
         if (!run) return
-        // A skill may occupy multiple slots (stacking); no dedup. Upgrading the
-        // skill lifts every slot that references it (buildLoadout scales by level).
         const slots = [...run.slots]
+        if (!skillId) {
+          slots[slot] = null
+          set({ run: { ...run, slots } })
+          return
+        }
+        // Copy cap: starter skills may be equipped twice, others once. If placing
+        // would exceed the cap, drop the earliest existing copy (i.e. move it).
+        const max = STARTER_SKILL_IDS.includes(skillId) ? 2 : 1
         slots[slot] = skillId
+        const copies: number[] = []
+        for (let i = 1; i <= 6; i++) if (slots[i] === skillId) copies.push(i)
+        let idx = 0
+        while (copies.length - idx > max) {
+          const rm = copies[idx] === slot ? copies[idx + 1] : copies[idx]
+          slots[rm] = null
+          idx++
+        }
         set({ run: { ...run, slots } })
       },
 
