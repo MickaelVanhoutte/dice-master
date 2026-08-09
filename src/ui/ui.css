@@ -672,8 +672,34 @@
   border-radius: 16px;
   box-shadow: var(--drop);
 }
-.modal-head h3 { color: var(--gold-soft); font-size: 18px; }
-.modal-list { padding-right: 2px; }
+.modal-head { flex: none; }
+.modal-head h3 { color: var(--gold-soft); font-size: 16px; }
+.modal { max-width: 620px; max-height: 96%; padding: 10px; gap: 6px; }
+/* hero grid — all heroes visible, no scroll */
+.modal-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  align-content: start;
+  overflow: hidden;
+}
+.modal .char-card {
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 5px;
+}
+.modal .char-card-art { width: 44px; height: 44px; }
+.modal .char-card-body h3 { font-size: 13px; }
+.modal .char-card-body p {
+  font-size: 9.5px;
+  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
 .char-list { display: flex; flex-direction: column; gap: var(--sp-2); }
 .char-card {
