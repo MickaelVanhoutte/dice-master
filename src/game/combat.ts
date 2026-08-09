@@ -1,6 +1,6 @@
 import type { CombatSetup, CombatState, MonsterCombat } from './types'
 import type { RNG } from './rng'
-import { analyzeCombo, rollDice } from './dice'
+import { analyzeCombo, rollDice, type ComboInfo } from './dice'
 import { applyEffect, evalCondition, pushEvent, sumMod, takenMult, tickMods } from './effects'
 import { attackEscalation } from './scaling'
 
@@ -28,6 +28,8 @@ export function initCombat(
     goldGained: 0,
     turn: 1,
     lastComboDouble: false,
+    resolveIndex: 0,
+    turnDealtDamage: false,
     phase: 'player',
     events: [],
     log: [`A ${monster.name} appears!`],
@@ -63,51 +65,47 @@ export function rerollDie(state: CombatState, index: number, rng: RNG): CombatSt
   return s
 }
 
-// Resolve the player's dice into skill effects.
-export function confirmPlayerTurn(state: CombatState): CombatState {
-  if (state.phase !== 'rolled' || !state.dice) return state
-  const s = clone(state)
-  s.events = []
-  const dice = s.dice as number[]
-  const combo = analyzeCombo(dice)
-  s.lastComboDouble = combo.hasDouble
-  const { loadout, character } = s.setup
-
-  // Character per-turn effect (e.g. Blood Pact).
-  if (character.perTurn) {
-    if (character.perTurn.loseHp) {
-      s.player.hp = Math.max(1, s.player.hp - character.perTurn.loseHp)
-      pushEvent(s, 'player', `-${character.perTurn.loseHp}`, 'damage')
-    }
-    if (character.perTurn.gainGold) {
-      const g = Math.round(character.perTurn.gainGold * (1 + s.setup.perks.goldPct))
-      s.goldGained += g
-      pushEvent(s, 'player', `+${g}g`, 'gold')
-    }
+// ── shared resolution helpers (used by both the instant and stepped paths) ──
+function applyPerTurn(s: CombatState): void {
+  const c = s.setup.character
+  if (!c.perTurn) return
+  if (c.perTurn.loseHp) {
+    s.player.hp = Math.max(1, s.player.hp - c.perTurn.loseHp)
+    pushEvent(s, 'player', `-${c.perTurn.loseHp}`, 'damage')
   }
+  if (c.perTurn.gainGold) {
+    const g = Math.round(c.perTurn.gainGold * (1 + s.setup.perks.goldPct))
+    s.goldGained += g
+    pushEvent(s, 'player', `+${g}g`, 'gold')
+  }
+}
 
-  let dealtAnyDamage = false
-  for (const value of dice) {
-    const skill = loadout[value]
-    if (!skill) continue
-    for (const eff of skill.effects) {
-      if (eff.kind === 'damage') dealtAnyDamage = true
+// Apply the skill in the slot matching `value`. Returns whether it dealt damage.
+function applySkillForDie(s: CombatState, value: number, combo: ComboInfo): boolean {
+  const skill = s.setup.loadout[value]
+  if (!skill) return false
+  let dealt = false
+  for (const eff of skill.effects) {
+    if (eff.kind === 'damage') dealt = true
+    applyEffect(s, eff, { combo })
+  }
+  if (skill.conditional && evalCondition(skill.conditional.when, s, combo)) {
+    for (const eff of skill.conditional.bonus) {
+      if (eff.kind === 'damage') dealt = true
       applyEffect(s, eff, { combo })
     }
-    if (skill.conditional && evalCondition(skill.conditional.when, s, combo)) {
-      for (const eff of skill.conditional.bonus) {
-        if (eff.kind === 'damage') dealtAnyDamage = true
-        applyEffect(s, eff, { combo })
-      }
-    }
   }
+  return dealt
+}
 
-  // Monster thorns aura: player takes damage for attacking.
-  if (s.monster.passive.kind === 'thornsAura' && dealtAnyDamage) {
+function applyThorns(s: CombatState): void {
+  if (s.monster.passive.kind === 'thornsAura' && s.turnDealtDamage) {
     s.player.hp = Math.max(0, s.player.hp - s.monster.passive.value)
     pushEvent(s, 'player', `-${s.monster.passive.value}`, 'magic')
   }
+}
 
+function endPlayerPhase(s: CombatState): void {
   s.dice = null
   if (s.monster.hp <= 0) {
     s.phase = 'won'
@@ -117,7 +115,81 @@ export function confirmPlayerTurn(state: CombatState): CombatState {
   } else {
     s.phase = 'monster'
   }
+}
+
+// Resolve all dice at once (used by tests and the balance sim).
+export function confirmPlayerTurn(state: CombatState): CombatState {
+  if (state.phase !== 'rolled' || !state.dice) return state
+  const s = clone(state)
+  s.events = []
+  const dice = s.dice as number[]
+  const combo = analyzeCombo(dice)
+  s.lastComboDouble = combo.hasDouble
+  applyPerTurn(s)
+  s.turnDealtDamage = false
+  for (const value of dice) if (applySkillForDie(s, value, combo)) s.turnDealtDamage = true
+  applyThorns(s)
+  endPlayerPhase(s)
   return s
+}
+
+// ── stepped resolution (UI): one die at a time, in dice order ──────────────
+// Begin resolving: apply the character per-turn beat, then hand off to resolveStep.
+export function startResolve(state: CombatState): CombatState {
+  if (state.phase !== 'rolled' || !state.dice) return state
+  const s = clone(state)
+  s.events = []
+  const combo = analyzeCombo(s.dice as number[])
+  s.lastComboDouble = combo.hasDouble
+  applyPerTurn(s)
+  s.turnDealtDamage = false
+  s.resolveIndex = 0
+  s.phase = 'resolving'
+  return s
+}
+
+// Index of the next die (from `from`) whose slot holds a skill; dice.length if none.
+function nextFiringIndex(s: CombatState, dice: number[], from: number): number {
+  let i = from
+  while (i < dice.length && !s.setup.loadout[dice[i]]) i++
+  return i
+}
+
+// Resolve exactly one firing die, then either continue, win, or end the turn.
+export function resolveStep(state: CombatState): CombatState {
+  if (state.phase !== 'resolving' || !state.dice) return state
+  const s = clone(state)
+  s.events = []
+  const dice = s.dice as number[]
+  const combo = analyzeCombo(dice)
+
+  const i = nextFiringIndex(s, dice, s.resolveIndex)
+  if (i < dice.length) {
+    if (applySkillForDie(s, dice[i], combo)) s.turnDealtDamage = true
+    s.resolveIndex = i + 1
+  } else {
+    s.resolveIndex = dice.length
+  }
+
+  if (s.monster.hp <= 0) {
+    s.dice = null
+    s.phase = 'won'
+    s.log.push(`${s.monster.name} defeated!`)
+    return s
+  }
+
+  if (nextFiringIndex(s, dice, s.resolveIndex) >= dice.length) {
+    applyThorns(s)
+    s.dice = null
+    s.phase = s.player.hp <= 0 ? 'lost' : 'monster'
+  }
+  return s
+}
+
+// The die index currently being resolved (for UI highlight).
+export function activeResolveIndex(state: CombatState): number {
+  if (state.phase !== 'resolving' || !state.dice) return -1
+  return nextFiringIndex(state, state.dice, state.resolveIndex)
 }
 
 // Monster acts, then hands turn back to the player.

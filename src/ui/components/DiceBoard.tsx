@@ -9,6 +9,7 @@ export function DiceBoard({
   onReroll,
   turn,
   goldGained,
+  activeIndex = -1,
 }: {
   dice: number[] | null
   rerolls: number
@@ -16,6 +17,7 @@ export function DiceBoard({
   onReroll: (index: number) => void
   turn: number
   goldGained: number
+  activeIndex?: number
 }) {
   const combo = dice ? analyzeCombo(dice) : null
 
@@ -46,7 +48,9 @@ export function DiceBoard({
             key={i}
             className={`die ${v == null ? 'die-empty' : ''} ${
               canReroll && v != null ? 'die-roll' : ''
-            } ${v != null && comboValues.has(v) ? 'die-combo' : ''}`}
+            } ${v != null && comboValues.has(v) ? 'die-combo' : ''} ${
+              activeIndex === i ? 'die-active' : activeIndex >= 0 && i < activeIndex ? 'die-done' : ''
+            }`}
             disabled={!canReroll || v == null}
             onClick={() => onReroll(i)}
           >

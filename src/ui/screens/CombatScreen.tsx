@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useRun } from '../../state/runStore'
-import { firingSlots } from '../../game/combat'
+import { activeResolveIndex, firingSlots } from '../../game/combat'
 import { BossPanel } from '../components/BossPanel'
 import { PlayerPanel } from '../components/PlayerPanel'
 import { DiceBoard } from '../components/DiceBoard'
@@ -11,7 +11,16 @@ export function CombatScreen() {
   const roll = useRun((s) => s.roll)
   const reroll = useRun((s) => s.reroll)
   const confirm = useRun((s) => s.confirm)
+  const resolveStep = useRun((s) => s.resolveStep)
   const monsterStep = useRun((s) => s.monsterStep)
+
+  // Resolve dice one at a time with a beat between each.
+  useEffect(() => {
+    if (combat?.phase === 'resolving') {
+      const t = setTimeout(resolveStep, 620)
+      return () => clearTimeout(t)
+    }
+  }, [combat?.phase, combat?.resolveIndex, resolveStep])
 
   useEffect(() => {
     if (combat?.phase === 'monster') {
@@ -22,17 +31,19 @@ export function CombatScreen() {
 
   if (!combat) return null
   const { phase } = combat
-  const firing = firingSlots(combat.dice)
+
+  // 'rolled' preview highlights every matching slot; 'resolving' highlights only
+  // the slot currently firing.
+  const activeIdx = activeResolveIndex(combat)
+  const activeSlot = phase === 'resolving' && combat.dice ? combat.dice[activeIdx] : null
+  const firing = phase === 'resolving' ? new Set(activeSlot != null ? [activeSlot] : []) : firingSlots(combat.dice)
 
   let label = 'Roll'
   let action: (() => void) | null = roll
   if (phase === 'rolled') {
     label = 'OK'
     action = confirm
-  } else if (phase === 'monster') {
-    label = '…'
-    action = null
-  } else if (phase === 'won' || phase === 'lost') {
+  } else if (phase === 'resolving' || phase === 'monster' || phase === 'won' || phase === 'lost') {
     label = '…'
     action = null
   }
@@ -48,6 +59,7 @@ export function CombatScreen() {
         onReroll={reroll}
         turn={combat.turn}
         goldGained={combat.goldGained}
+        activeIndex={phase === 'resolving' ? activeIdx : -1}
       />
 
       <PlayerPanel combat={combat} />

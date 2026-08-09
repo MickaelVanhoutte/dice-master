@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { confirmPlayerTurn, initCombat, resolveMonsterTurn } from './combat'
+import {
+  confirmPlayerTurn,
+  initCombat,
+  resolveMonsterTurn,
+  resolveStep,
+  startResolve,
+} from './combat'
 import type { CombatSetup, CombatState, MonsterCombat, Skill } from './types'
 import { aggregatePerks } from '../data/perks'
 import { CHARACTERS_BY_ID } from '../data/characters'
@@ -135,6 +141,31 @@ describe('per-turn damage escalation', () => {
     const dmg3 = 100 - resolveMonsterTurn(t3).player.hp
     expect(dmg1).toBe(10) // turn 1 = base
     expect(dmg3).toBeGreaterThan(dmg1) // escalates
+  })
+})
+
+describe('stepped resolution', () => {
+  it('startResolve + resolveStep matches confirmPlayerTurn for a 2,2,3 roll', () => {
+    const s = setup({ 2: 'guard', 3: 'slash' }) // shield 10, physical 12
+    const base = () => rolled(s, monster({ hp: 100 }), [2, 2, 3])
+
+    const instant = confirmPlayerTurn(base())
+
+    let step = startResolve(base())
+    let guard = 0
+    while (step.phase === 'resolving') {
+      step = resolveStep(step)
+      if (guard++ > 20) throw new Error('resolve did not terminate')
+    }
+
+    expect(step.phase).toBe(instant.phase)
+    expect(step.monster.hp).toBe(instant.monster.hp)
+    expect(step.player.shield).toBe(instant.player.shield)
+    expect(step.player.hp).toBe(instant.player.hp)
+    expect(step.goldGained).toBe(instant.goldGained)
+    // 2,2,3 is a double (x1.1): two shields (10*1.1=11 each) + one strike (12*1.1=13)
+    expect(step.player.shield).toBe(22)
+    expect(step.monster.hp).toBe(100 - 13)
   })
 })
 

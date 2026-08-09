@@ -3,11 +3,12 @@ import { persist } from 'zustand/middleware'
 import type { Character, CombatState, RunState, Skill } from '../game/types'
 import { makeRng, randomSeed, type RNG } from '../game/rng'
 import {
-  confirmPlayerTurn,
   initCombat,
   rerollDie,
   resolveMonsterTurn,
+  resolveStep,
   rollPlayer,
+  startResolve,
 } from '../game/combat'
 import { scaleMonster, goldReward, skillDropChance } from '../game/scaling'
 import { scaleSkill, upgradeCost } from '../game/skillMath'
@@ -58,6 +59,7 @@ interface RunStore {
   roll: () => void
   reroll: (index: number) => void
   confirm: () => void
+  resolveStep: () => void
   monsterStep: () => void
   claimReward: (takeSkill: boolean) => void
   abandonRun: () => void
@@ -236,9 +238,16 @@ export const useRun = create<RunStore>()(
       confirm: () => {
         const { combat, run } = get()
         if (!combat || !run) return
-        const next = confirmPlayerTurn(combat)
+        set({ combat: startResolve(combat) })
+      },
+
+      resolveStep: () => {
+        const { combat, run } = get()
+        if (!combat || !run) return
+        const next = resolveStep(combat)
         set({ combat: next })
         if (next.phase === 'won') get().handleWin()
+        else if (next.phase === 'lost') get().handleLoss()
       },
 
       monsterStep: () => {

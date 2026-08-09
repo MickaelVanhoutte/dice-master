@@ -152,7 +152,7 @@ export interface CombatSetup {
   perks: PerkEffects
 }
 
-export type CombatPhase = 'player' | 'rolled' | 'monster' | 'won' | 'lost'
+export type CombatPhase = 'player' | 'rolled' | 'resolving' | 'monster' | 'won' | 'lost'
 
 export interface CombatEvent {
   target: 'player' | 'monster'
@@ -169,6 +169,8 @@ export interface CombatState {
   goldGained: number
   turn: number
   lastComboDouble: boolean // whether last resolved roll had a double+ (for characters)
+  resolveIndex: number // during 'resolving', index of the next die to apply
+  turnDealtDamage: boolean // whether the player dealt damage this turn (for thornsAura)
   phase: CombatPhase
   events: CombatEvent[]
   log: string[]
