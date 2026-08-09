@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { analyzeCombo } from '../../game/dice'
-import { Die3D } from './Die3D'
+import { RollingDie } from './Die3D'
 
 export function DiceBoard({
   dice,
@@ -60,7 +60,7 @@ export function DiceBoard({
           <button
             key={i}
             className={`die ${v == null ? 'die-empty' : ''} ${
-              canReroll && v != null ? 'die-roll' : ''
+              canReroll && v != null ? 'die-rerollable' : ''
             } ${v != null && comboValues.has(v) ? 'die-combo' : ''} ${
               activeIndex === i ? 'die-active' : activeIndex >= 0 && i < activeIndex ? 'die-done' : ''
             }`}
@@ -70,7 +70,7 @@ export function DiceBoard({
             {v == null ? (
               <span className="die-q">?</span>
             ) : (
-              <Die3D key={`${i}-${nonce}-${v}`} value={v} spin={nonce + i} combo={comboValues.has(v)} />
+              <RollingDie key={`${i}-${nonce}-${v}`} value={v} spin={nonce + i} combo={comboValues.has(v)} />
             )}
           </button>
         ))}

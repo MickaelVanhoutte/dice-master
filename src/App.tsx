@@ -6,6 +6,7 @@ import { RewardScreen } from './ui/screens/RewardScreen'
 import { GameOverScreen } from './ui/screens/GameOverScreen'
 import { PerksScreen } from './ui/screens/PerksScreen'
 import { BestiaryScreen } from './ui/screens/BestiaryScreen'
+import { InstallPrompt } from './ui/components/InstallPrompt'
 
 export default function App() {
   const screen = useRun((s) => s.screen)
@@ -29,6 +30,7 @@ export default function App() {
       {screen === 'gameover' && <GameOverScreen />}
         {screen === 'perks' && <PerksScreen />}
         {screen === 'bestiary' && <BestiaryScreen />}
+        <InstallPrompt visible={screen === 'menu'} />
       </div>
     </>
   )
