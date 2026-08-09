@@ -822,15 +822,15 @@
   align-content: start;
 }
 
-/* ── menu fit safety (center when it fits, scroll if too short) ── */
+/* ── menu: always fits, never scrolls ── */
 .menu {
-  justify-content: flex-start;
-  align-items: stretch;
-  overflow-y: auto;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
   padding: 8px 12px;
 }
 .menu-inner {
-  margin: auto;
+  margin: 0 auto;
   width: 100%;
   max-width: 560px;
   display: flex;
@@ -842,6 +842,16 @@
 .menu .level-card { padding: 8px 12px; }
 .menu-buttons .btn.big { min-height: 46px; font-size: 17px; }
 .menu-footer .btn { min-height: 38px; }
+
+/* shrink on short landscape so it always fits without scrolling */
+@media (max-height: 400px) {
+  .menu-inner { gap: 6px; }
+  .menu .game-title { font-size: 20px; }
+  .menu .title-wrap p { display: none; }
+  .menu .level-card { padding: 6px 10px; }
+  .menu-buttons .btn.big { min-height: 40px; font-size: 15px; }
+  .menu-footer .btn { min-height: 34px; font-size: 12px; }
+}
 
 /* inline perk-points chip in the header */
 .points-inline {
