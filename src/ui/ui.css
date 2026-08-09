@@ -175,6 +175,8 @@
 .shape-round .portrait-ring { border-radius: 50%; }
 .shape-rect .portrait-ring { border-radius: 12px; }
 .art-svg { width: 100%; height: 100%; display: block; object-fit: cover; object-position: top center; }
+/* boss art carries a full scene; anchor to the creature (upper-mid), not the sky */
+.boss-box .art-svg { object-position: center 30%; }
 
 /* ════════════════════════════════════════════════════════════════════════
    Floaters
