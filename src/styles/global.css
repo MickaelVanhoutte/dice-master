@@ -94,6 +94,25 @@ h3 {
   font-weight: 700;
   letter-spacing: 0.03em;
 }
+h1,
+h2 {
+  text-shadow: var(--text-pop);
+}
+
+/* ── standardized text roles ─────────────────────────────────── */
+.u-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-shadow: var(--text-pop);
+}
+.u-status {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-shadow: var(--text-pop);
+}
+.u-body {
+  font-family: var(--font-body);
+}
 
 button {
   font-family: inherit;

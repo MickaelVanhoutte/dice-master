@@ -202,7 +202,7 @@
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 19px;
-  text-shadow: 0 2px 4px #000;
+  text-shadow: var(--text-pop);
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -282,6 +282,7 @@
   padding: 6px 4px 3px;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
   border-radius: 0 0 12px 12px;
+  text-shadow: var(--text-pop);
 }
 
 .next-plaque {
@@ -342,14 +343,14 @@
   font-family: var(--font-display);
   font-size: 12px;
   color: var(--text-dim);
-  text-shadow: 0 1px 3px #000;
+  text-shadow: var(--text-pop);
 }
 .gold-tag {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 13px;
   color: var(--gold);
-  text-shadow: 0 1px 3px #000;
+  text-shadow: var(--text-pop);
 }
 .combo-badge {
   position: absolute;
@@ -420,8 +421,28 @@
 .reroll-hint { font-size: 12px; color: var(--teal-lit); font-weight: 700; z-index: 2; text-shadow: 0 1px 3px #000; }
 
 /* bottom row (grid areas) */
-.skillcards { grid-area: skills; display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; align-content: center; }
-.player-hud { grid-area: player; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.skillcards {
+  grid-area: skills;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+.skillcards > * { flex: 1 1 0; max-width: 96px; min-width: 0; }
+/* unified HUD: portrait + health + shield as one panel, bottom-left */
+.player-hud {
+  grid-area: player;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 8px;
+  border-radius: 12px;
+  background: rgba(18, 11, 5, 0.4);
+  border: 1px solid var(--line);
+  box-shadow: var(--drop), inset 0 1px 0 rgba(255, 240, 200, 0.12);
+  backdrop-filter: blur(2px);
+}
 .player-portrait-wrap { position: relative; flex: none; }
 .player-portrait { width: 48px; height: 48px; }
 .player-stats { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -433,17 +454,19 @@
   justify-self: center;
   align-self: center;
   flex: none;
-  width: 84px;
-  height: 84px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 35%, var(--teal-lit), var(--teal) 60%, var(--teal-dark));
+  background: radial-gradient(circle at 50% 32%, var(--teal-lit), var(--teal) 58%, var(--teal-dark));
   border: 3px solid var(--brass);
-  box-shadow: var(--bevel-out), 0 5px 0 #06251f, var(--drop);
+  box-shadow: var(--bevel-out), 0 5px 0 #06251f, var(--drop), 0 0 16px -4px var(--teal-lit);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  transition: transform 0.12s ease, filter 0.12s ease;
 }
+.roll-btn:hover:not(:disabled) { transform: scale(1.05); }
 .roll-btn::after {
   content: '';
   position: absolute;
@@ -458,12 +481,12 @@
   color: #fff5df;
   text-shadow: 0 2px 3px rgba(0, 0, 0, 0.7);
 }
-.roll-btn:active { transform: translateY(2px); box-shadow: var(--bevel-out), 0 3px 0 #06251f, var(--drop); }
+.roll-btn:active:not(:disabled) { transform: scale(0.96) translateY(2px); box-shadow: var(--bevel-out), 0 3px 0 #06251f, var(--drop); }
 .roll-btn:disabled { filter: grayscale(0.6) brightness(0.7); }
-.roll-btn.ready { animation: rollpulse 1.2s ease-in-out infinite; }
+.roll-btn.ready { animation: rollpulse 1.15s ease-in-out infinite; }
 @keyframes rollpulse {
-  0%, 100% { box-shadow: var(--bevel-out), 0 5px 0 #06251f, var(--drop); }
-  50% { box-shadow: var(--bevel-out), 0 5px 0 #06251f, var(--drop), 0 0 18px 2px var(--gold); }
+  0%, 100% { box-shadow: var(--bevel-out), 0 5px 0 #06251f, var(--drop), 0 0 14px -4px var(--gold); }
+  50% { box-shadow: var(--bevel-out), 0 5px 0 #06251f, var(--drop), 0 0 26px 3px var(--gold); transform: scale(1.04); }
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -474,13 +497,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2px;
-  padding: 4px 3px 5px;
+  padding: 5px 4px 6px;
   border-radius: 9px;
   background: linear-gradient(170deg, var(--parch-1), var(--parch-3));
   border: 2px solid var(--brass);
   color: var(--ink);
-  box-shadow: var(--drop);
+  box-shadow: var(--drop), inset 0 1px 0 rgba(255, 250, 235, 0.6),
+    inset 0 -3px 6px rgba(120, 90, 45, 0.28);
   min-width: 0;
 }
 .skillcard.clickable { cursor: pointer; }
@@ -497,16 +522,18 @@
   color: #4a3720;
 }
 .sc-die-face { width: 100%; height: 100%; }
+/* dark chip behind the icon so the role-colored glyph pops */
 .sc-icon {
-  width: 26px;
-  height: 26px;
   color: var(--role);
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
+  padding: 5px;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 250, 235, 0.4);
 }
-.sc-icon-svg { width: 100%; height: 100%; }
+.sc-icon-svg { width: 22px; height: 22px; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5)); }
 .sc-lv {
   position: absolute;
   top: 2px;
@@ -525,6 +552,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-shadow: var(--text-pop-soft);
 }
 .sc-rows { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 4px; }
 .sc-row {
@@ -538,10 +566,11 @@
 .sc-row.bonus { opacity: 0.85; }
 .sc-row.bonus::before { content: '◇'; font-size: 8px; margin-right: 1px; }
 .sc-row-ic { width: 11px; height: 11px; }
-.skillcard.compact { height: 66px; overflow: hidden; padding: 3px 3px 4px; gap: 1px; }
+.skillcard.compact { height: 66px; overflow: hidden; padding: 3px 3px 4px; gap: 2px; }
 .skillcard.compact .sc-name { display: none; }
 .skillcard.compact .sc-die { width: 15px; height: 15px; }
-.skillcard.compact .sc-icon { width: 20px; height: 20px; }
+.skillcard.compact .sc-icon { padding: 3px; border-radius: 7px; }
+.skillcard.compact .sc-icon-svg { width: 18px; height: 18px; }
 .skillcard.compact .sc-lv { font-size: 8px; top: 1px; right: 2px; }
 .skillcard.compact .sc-rows { gap: 1px 3px; }
 .skillcard.compact .sc-row { font-size: 9px; }
@@ -827,8 +856,8 @@
 .loot-breakdown { width: 100%; border-top: 1px solid var(--parch-line); padding-top: 6px; display: flex; flex-direction: column; gap: 2px; }
 .reward-skill { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .skill-offer { display: flex; justify-content: center; }
-.skill-offer .skillcard { width: 130px; padding: 8px 8px 10px; }
-.skill-offer .sc-icon { width: 34px; height: 34px; }
+.skill-offer .skillcard { width: 130px; padding: 10px 8px 12px; gap: 4px; }
+.skill-offer .sc-icon-svg { width: 34px; height: 34px; }
 .skill-offer .sc-name { font-size: 13px; }
 .skill-offer .sc-row { font-size: 12px; }
 .offer-desc { max-width: 200px; }

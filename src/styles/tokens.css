@@ -61,6 +61,9 @@
   /* ── shadows / bevels ────────────────────────────────────── */
   --bevel-out: inset 0 1px 0 rgba(255, 240, 200, 0.35), inset 0 -2px 4px rgba(0, 0, 0, 0.4);
   --drop: 0 6px 16px rgba(0, 0, 0, 0.55);
+  /* legibility: pop text over the background image */
+  --text-pop: 0px 2px 4px rgba(0, 0, 0, 0.85);
+  --text-pop-soft: 0px 1px 2px rgba(0, 0, 0, 0.45);
 
   /* brass border gradient (reused) */
   --brass-grad: linear-gradient(160deg, var(--brass-lit), var(--brass) 45%, var(--brass-dark));
