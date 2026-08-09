@@ -49,12 +49,6 @@ export function PrepScreen() {
     ? Math.round(upgradeCost(focusSkill, focusOwned?.level ?? 0) * (1 - perks.upgradeDiscountPct))
     : 0
 
-  const equip = (id: string) => {
-    setSlot(sel, id)
-    setFocus(id)
-    setSel((s) => (s % 6) + 1) // advance to next slot for quick filling
-  }
-
   // Pointer-drag a loadout slot onto another to swap (touch + mouse).
   const startDrag = (slot: number, e: React.PointerEvent) => {
     setSel(slot)
@@ -160,27 +154,31 @@ export function PrepScreen() {
                 </div>
                 <div className="desc-text">{describeSkill(focusSkill, focusOwned?.level ?? 0)}</div>
                 <div className="desc-actions">
-                  <button
-                    className="btn secondary desc-btn"
-                    onClick={() => {
-                      const s = slotOf(focusSkill.id)
-                      if (s > 0) setSlot(s, null)
-                    }}
-                    disabled={slotOf(focusSkill.id) < 1}
-                  >
-                    Unequip
-                  </button>
+                  {run.slots[sel] === focusSkill.id ? (
+                    <button
+                      className="btn secondary desc-btn"
+                      onClick={() => setSlot(sel, null)}
+                    >
+                      Unequip
+                    </button>
+                  ) : (
+                    <button className="btn desc-btn" onClick={() => setSlot(sel, focusSkill.id)}>
+                      Equip → slot {sel}
+                    </button>
+                  )}
                   <button
                     className="btn gold desc-btn"
                     disabled={run.gold < focusCost}
                     onClick={() => upgradeSkill(focusSkill.id)}
                   >
-                    <GoldIcon className="mini-ic" /> Upgrade {focusCost}
+                    <GoldIcon className="mini-ic" /> {focusCost}
                   </button>
                 </div>
               </>
             ) : (
-              <div className="dim small center">Tap a skill for details, or a slot then a skill to equip.</div>
+              <div className="dim small center">
+                Select a slot, then tap a skill to preview — press Equip to place it.
+              </div>
             )}
           </div>
         </div>
@@ -189,7 +187,7 @@ export function PrepScreen() {
         <div className="prep-right">
           <div className="pool-panel">
             <div className="row spread pool-head">
-              <span className="label pool-label">Skills — tap to equip in slot {sel}</span>
+              <span className="label pool-label">Skills — tap to preview</span>
               {pageCount > 1 && (
                 <span className="pager">
                   <button
@@ -222,7 +220,7 @@ export function PrepScreen() {
                     key={o.id}
                     className={`pool-tile ${focus === o.id ? 'focused' : ''} ${at > 0 ? 'equipped' : ''}`}
                     style={{ color: roleColor(base.art) }}
-                    onClick={() => equip(o.id)}
+                    onClick={() => setFocus(o.id)}
                   >
                     {at > 0 && <span className="pool-slot">{at}</span>}
                     <span className="pool-lv">Lv{o.level + 1}</span>
