@@ -9,6 +9,7 @@ import { SkillCard } from '../components/SkillCard'
 export function CombatScreen() {
   const combat = useRun((s) => s.combat)
   const rollNonce = useRun((s) => s.rollNonce)
+  const goTo = useRun((s) => s.goTo)
   const roll = useRun((s) => s.roll)
   const reroll = useRun((s) => s.reroll)
   const confirm = useRun((s) => s.confirm)
@@ -51,6 +52,17 @@ export function CombatScreen() {
 
   return (
     <div className="combat">
+      <button className="combat-exit" onClick={() => goTo('menu')} aria-label="Menu">
+        <svg viewBox="0 0 24 24" aria-hidden>
+          <path
+            d="M6 6 L18 18 M18 6 L6 18"
+            stroke="currentColor"
+            strokeWidth="2.6"
+            strokeLinecap="round"
+          />
+        </svg>
+      </button>
+
       <BossPanel combat={combat} />
 
       <DiceBoard

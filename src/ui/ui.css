@@ -222,6 +222,25 @@
     'player skills roll';
 }
 
+.combat-exit {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 30;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--wood-3), var(--wood-1));
+  border: 1px solid var(--brass);
+  color: var(--gold-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--drop);
+}
+.combat-exit svg { width: 18px; height: 18px; }
+.combat-exit:active { transform: translateY(1px); }
+
 /* boss + stats band (equal-size boxes, side by side) */
 .boss-band {
   grid-area: band;
@@ -715,33 +734,27 @@
   box-shadow: var(--drop);
 }
 .modal-head { flex: none; }
-.modal-head h3 { color: var(--gold-soft); font-size: 16px; }
-.modal { max-width: 620px; max-height: 96%; padding: 10px; gap: 6px; }
-/* hero grid — all heroes visible, no scroll */
+.modal-head h3 { color: var(--gold-soft); font-size: 15px; }
+.modal { max-width: 680px; max-height: 98%; padding: 8px 10px; gap: 5px; }
+/* hero grid — compact so all fit; scrolls only if the screen is tiny */
 .modal-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 6px;
   align-content: start;
-  overflow: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .modal .char-card {
   flex-direction: column;
   text-align: center;
   align-items: center;
-  gap: 4px;
-  padding: 6px 5px;
+  gap: 3px;
+  padding: 5px 4px;
 }
-.modal .char-card-art { width: 44px; height: 44px; }
-.modal .char-card-body h3 { font-size: 13px; }
-.modal .char-card-body p {
-  font-size: 9.5px;
-  line-height: 1.15;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+.modal .char-card-art { width: 36px; height: 36px; }
+.modal .char-card-body h3 { font-size: 12px; }
+.modal .char-card-body p { font-size: 9.5px; line-height: 1.18; }
 
 .char-list { display: flex; flex-direction: column; gap: var(--sp-2); }
 .char-card {
