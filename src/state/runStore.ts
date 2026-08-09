@@ -232,7 +232,7 @@ export const useRun = create<RunStore>()(
         const { combat, run } = get()
         if (!combat || !run) return
         const r = getRng(run.seed + run.bossIndex * 1000)
-        set({ combat: rerollDie(combat, index, r), rollNonce: get().rollNonce + 1 })
+        set({ combat: rerollDie(combat, index, r) })
       },
 
       confirm: () => {

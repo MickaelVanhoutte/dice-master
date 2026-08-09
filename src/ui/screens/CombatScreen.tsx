@@ -8,6 +8,7 @@ import { SkillCard } from '../components/SkillCard'
 
 export function CombatScreen() {
   const combat = useRun((s) => s.combat)
+  const rollNonce = useRun((s) => s.rollNonce)
   const roll = useRun((s) => s.roll)
   const reroll = useRun((s) => s.reroll)
   const confirm = useRun((s) => s.confirm)
@@ -60,6 +61,7 @@ export function CombatScreen() {
         turn={combat.turn}
         goldGained={combat.goldGained}
         activeIndex={phase === 'resolving' ? activeIdx : -1}
+        nonce={rollNonce}
       />
 
       <PlayerPanel combat={combat} />

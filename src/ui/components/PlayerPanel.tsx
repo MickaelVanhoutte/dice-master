@@ -4,20 +4,25 @@ import { CharacterArt, HeartIcon, ShieldIcon } from '../../assets/AssetRegistry'
 import { StatBar } from './Bars'
 import { Floaters } from './Floaters'
 import { OrnatePortrait } from './Frame'
+import { HitFlash, lastHit, shakeKeyframes } from './HitFx'
 
 export function PlayerPanel({ combat }: { combat: CombatState }) {
   const p = combat.player
-  const hit = combat.events.some(
-    (e) => e.target === 'player' && (e.tone === 'damage' || e.tone === 'magic'),
-  )
+  const hit = lastHit(combat.events, 'player')
   return (
     <div className="player-hud">
       <div className="player-portrait-wrap">
-        <motion.div animate={hit ? { x: [0, -5, 5, -2, 0] } : {}} transition={{ duration: 0.3 }}>
+        <motion.div
+          key={hit?.id ?? 'idle'}
+          initial={{ x: 0, rotate: 0 }}
+          animate={hit ? shakeKeyframes : {}}
+          transition={{ duration: 0.4 }}
+        >
           <OrnatePortrait className="player-portrait" glow="var(--teal-lit)">
             <CharacterArt id={combat.setup.character.id} className="art-svg" />
           </OrnatePortrait>
         </motion.div>
+        <HitFlash hit={hit} />
         <Floaters events={combat.events} target="player" />
       </div>
       <div className="player-stats">

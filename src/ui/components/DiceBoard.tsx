@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { DieFace } from '../../assets/AssetRegistry'
 import { analyzeCombo } from '../../game/dice'
+import { Die3D } from './Die3D'
 
 export function DiceBoard({
   dice,
@@ -10,6 +10,7 @@ export function DiceBoard({
   turn,
   goldGained,
   activeIndex = -1,
+  nonce = 0,
 }: {
   dice: number[] | null
   rerolls: number
@@ -18,6 +19,7 @@ export function DiceBoard({
   turn: number
   goldGained: number
   activeIndex?: number
+  nonce?: number
 }) {
   const combo = dice ? analyzeCombo(dice) : null
 
@@ -28,6 +30,8 @@ export function DiceBoard({
     for (const [v, c] of counts) if (c === combo.maxSame) comboValues.add(v)
   }
 
+  const comboKind = combo?.hasTriple ? 'triple' : combo && combo.maxSame >= 4 ? 'quad' : 'double'
+
   return (
     <div className="board">
       <div className="board-topbar">
@@ -35,12 +39,21 @@ export function DiceBoard({
         {goldGained > 0 && <span className="gold-tag">+{goldGained}g</span>}
       </div>
 
-      {combo && combo.multiplier > 1 && (
-        <div className="combo-badge">
-          {combo.hasTriple ? 'TRIPLE' : combo.maxSame >= 4 ? 'QUAD+' : 'DOUBLE'} ×
-          {combo.multiplier.toFixed(1)}
-        </div>
-      )}
+      <AnimatePresence>
+        {combo && combo.multiplier > 1 && (
+          <motion.div
+            key={`${comboKind}-${nonce}`}
+            className={`combo-badge combo-${comboKind}`}
+            initial={{ scale: 0.4, opacity: 0, y: 6 }}
+            animate={{ scale: [0.4, 1.25, 1], opacity: 1, y: 0 }}
+            exit={{ scale: 0.6, opacity: 0 }}
+            transition={{ duration: 0.45, ease: 'backOut' }}
+          >
+            {comboKind === 'triple' ? 'TRIPLE' : comboKind === 'quad' ? 'QUAD+' : 'DOUBLE'} ×
+            {combo.multiplier.toFixed(1)}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="dice-row">
         {(dice ?? [null, null, null]).map((v, i) => (
@@ -57,18 +70,7 @@ export function DiceBoard({
             {v == null ? (
               <span className="die-q">?</span>
             ) : (
-              <AnimatePresence mode="popLayout">
-                <motion.span
-                  key={v}
-                  className="die-inner"
-                  initial={{ rotate: -220, scale: 0.3, opacity: 0 }}
-                  animate={{ rotate: 0, scale: 1, opacity: 1 }}
-                  exit={{ rotate: 120, scale: 0.3, opacity: 0 }}
-                  transition={{ type: 'spring', stiffness: 260, damping: 13, delay: i * 0.06 }}
-                >
-                  <DieFace value={v} className="die-face" />
-                </motion.span>
-              </AnimatePresence>
+              <Die3D key={`${i}-${nonce}-${v}`} value={v} spin={nonce + i} combo={comboValues.has(v)} />
             )}
           </button>
         ))}

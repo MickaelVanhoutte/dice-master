@@ -4,6 +4,7 @@ import { MonsterArt, HeartIcon, ShieldIcon, SkillIcon } from '../../assets/Asset
 import { StatBar } from './Bars'
 import { Floaters } from './Floaters'
 import { OrnatePortrait, WoodPanel } from './Frame'
+import { HitFlash, lastHit, shakeKeyframes } from './HitFx'
 import { sumMod } from '../../game/effects'
 import { attackEscalation } from '../../game/scaling'
 
@@ -15,9 +16,7 @@ export function BossPanel({ combat }: { combat: CombatState }) {
   const weaken = sumMod(m, 'weaken')
   const poison = sumMod(m, 'poison')
   const curse = sumMod(m, 'curse')
-  const hit = combat.events.some(
-    (e) => e.target === 'monster' && (e.tone === 'damage' || e.tone === 'magic'),
-  )
+  const hit = lastHit(combat.events, 'monster')
 
   return (
     <div className="boss-band">
@@ -25,13 +24,16 @@ export function BossPanel({ combat }: { combat: CombatState }) {
       <div className="boss-box">
         <motion.div
           className="boss-box-art"
-          animate={hit ? { x: [0, -6, 6, -3, 0] } : {}}
-          transition={{ duration: 0.3 }}
+          key={hit?.id ?? 'idle'}
+          initial={{ x: 0, rotate: 0 }}
+          animate={hit ? shakeKeyframes : {}}
+          transition={{ duration: 0.4 }}
         >
           <OrnatePortrait className="boss-portrait" glow="var(--debuff)" shape="rect">
             <MonsterArt id={m.id} className="art-svg" />
           </OrnatePortrait>
         </motion.div>
+        <HitFlash hit={hit} />
         <Floaters events={combat.events} target="monster" />
         <div className="boss-name-cap">{m.name}</div>
       </div>

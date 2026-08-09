@@ -178,6 +178,20 @@
 /* boss art carries a full scene; anchor to the creature (upper-mid), not the sky */
 .boss-box .art-svg { object-position: center 30%; }
 
+/* hit flash over a portrait */
+.hit-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: 12px;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.shape-round + .hit-flash,
+.player-portrait-wrap .hit-flash { border-radius: 50%; }
+.hit-flash.damage { background: radial-gradient(circle, rgba(255, 190, 130, 0.95), rgba(255, 90, 40, 0.4) 70%); }
+.hit-flash.magic { background: radial-gradient(circle, rgba(185, 225, 255, 0.95), rgba(80, 150, 255, 0.4) 70%); }
+
 /* ════════════════════════════════════════════════════════════════════════
    Floaters
    ════════════════════════════════════════════════════════════════════════*/
@@ -319,43 +333,72 @@
   text-shadow: 0 1px 3px #000;
 }
 .combo-badge {
+  position: absolute;
+  top: 10px;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 16px;
+  font-size: 17px;
   color: var(--gold);
   letter-spacing: 0.06em;
-  text-shadow: 0 0 12px rgba(255, 200, 90, 0.8), 0 2px 4px #000;
-  z-index: 2;
+  text-shadow: 0 0 12px rgba(255, 200, 90, 0.85), 0 2px 4px #000;
+  z-index: 3;
+  pointer-events: none;
 }
+.combo-triple { font-size: 21px; color: #ffe27a; text-shadow: 0 0 16px rgba(255, 210, 90, 1), 0 2px 5px #000; }
+.combo-quad { font-size: 24px; color: #fff0a8; text-shadow: 0 0 20px rgba(255, 220, 110, 1), 0 2px 6px #000; }
 
-.dice-row { display: flex; gap: 14px; z-index: 2; }
+.dice-row { display: flex; gap: 16px; z-index: 2; }
 .die {
   width: 58px;
   height: 58px;
+  border: none;
+  background: none;
+  box-shadow: none;
+  padding: 0;
   border-radius: 12px;
-  background: linear-gradient(155deg, #ffffff, #f3ede0 70%, #e4dcc8);
-  border: 2px solid #b79a5f;
-  box-shadow: 0 6px 10px rgba(40, 25, 10, 0.45), 0 2px 0 #cbb98f, inset 0 2px 2px #fff;
-  color: #2a2016;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
-.die-inner { display: flex; align-items: center; justify-content: center; }
-.die-face { width: 42px; height: 42px; }
+/* 3D cube */
+.cube-wrap { width: 58px; height: 58px; perspective: 340px; }
+.cube {
+  --half: 29px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 6px 8px rgba(30, 18, 6, 0.5));
+}
+.cube-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: linear-gradient(155deg, #fffdf6, #f0e8d6 70%, #ddd2ba);
+  border: 2px solid #b79a5f;
+  box-shadow: inset 0 2px 3px #fff, inset 0 -3px 6px rgba(120, 95, 55, 0.35);
+  color: #2a2016;
+}
+.cube-pips { width: 42px; height: 42px; }
+.cube-combo .cube-face {
+  background: linear-gradient(160deg, #fff4d0, #ffcf5c 75%, #e8ab2c);
+  border-color: #c9a23e;
+  color: #5a4410;
+}
 .die-empty {
+  border-radius: 12px;
   background: rgba(30, 20, 10, 0.25);
   border: 2px dashed rgba(255, 245, 220, 0.55);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   color: rgba(255, 245, 220, 0.7);
 }
 .die-q { font-family: var(--font-display); font-size: 24px; font-weight: 800; }
-.die-roll { outline: 3px solid var(--teal-lit); outline-offset: 2px; }
-.die-combo {
-  background: linear-gradient(160deg, #fff4d0, #ffd873);
-  box-shadow: 0 5px 0 #b58a1e, inset 0 2px 3px #fff, 0 0 18px -2px var(--gold);
-  color: #5a4410;
-}
+.die-roll { outline: 3px solid var(--teal-lit); outline-offset: 3px; border-radius: 12px; }
+.die-combo { filter: drop-shadow(0 0 10px var(--gold)); }
 .die-active {
   outline: 3px solid var(--gold);
   outline-offset: 2px;
