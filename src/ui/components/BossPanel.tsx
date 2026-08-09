@@ -37,7 +37,6 @@ export function BossPanel({ combat }: { combat: CombatState }) {
       </div>
 
       <WoodPanel className="next-plaque">
-        <div className="next-title">Next</div>
         <div className="next-attacks">
           {phys > 0 && (
             <span className="next-atk phys">
@@ -51,16 +50,12 @@ export function BossPanel({ combat }: { combat: CombatState }) {
           )}
           {phys === 0 && mag === 0 && <span className="dim small">—</span>}
         </div>
-        <div className="next-stats">
-          <div className="next-stat">
-            <HeartIcon className="next-ic hp" />
-            <StatBar value={m.hp} max={m.maxHp} color="var(--danger)" height={10} />
-            <span className="next-num">{m.hp}</span>
-          </div>
-          <div className="next-stat">
-            <ShieldIcon className="next-ic shd" />
-            <span className="next-num">{m.shield}</span>
-          </div>
+        <div className="next-stat">
+          <HeartIcon className="next-ic hp" />
+          <StatBar value={m.hp} max={m.maxHp} color="var(--danger)" height={10} />
+          <span className="next-num">{m.hp}</span>
+          <ShieldIcon className="next-ic shd" />
+          <span className="next-num shd-num">{m.shield}</span>
         </div>
         <div className="next-tags">
           {esc > 1 && (
